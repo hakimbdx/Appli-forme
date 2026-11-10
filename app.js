@@ -59,6 +59,19 @@ function bmiCategory(v) {
   if (v < 30) return 'Surpoids';
   return 'Obésité';
 }
+// Types de régime : répartition des calories entre protéines / glucides / lipides
+const DIETS = {
+  balanced: { name: 'Équilibré', p: 0.25, c: 0.45, f: 0.30,
+    tip: 'Rééquilibrage : des légumes à chaque repas, des féculents en quantité raisonnable, une source de protéines et peu de produits sucrés ou transformés.' },
+  protein: { name: 'Riche en protéines', p: 0.35, c: 0.35, f: 0.30,
+    tip: 'Riche en protéines : viandes maigres, poisson, œufs, skyr, fromage blanc, légumineuses. Les protéines rassasient et aident à préserver les muscles.' },
+  lowcarb: { name: 'Pauvre en glucides', p: 0.30, c: 0.25, f: 0.45,
+    tip: 'Low carb : limitez pain, pâtes, riz et sucres ; privilégiez légumes, protéines et bonnes graisses (huile d\'olive, avocat, oléagineux).' },
+  mediterranean: { name: 'Méditerranéen', p: 0.20, c: 0.45, f: 0.35,
+    tip: 'Méditerranéen : légumes, fruits, céréales complètes, légumineuses, poisson, huile d\'olive ; peu de viande rouge.' },
+};
+const diet = () => DIETS[state.profile?.diet] || DIETS.balanced;
+
 // Mifflin-St Jeor
 function bmr() {
   const p = state.profile; const w = latestWeight();
@@ -73,9 +86,9 @@ function targets() {
   const kcal = Math.max(minKcal, Math.round(tdee + state.profile.goal));
   return {
     bmr: Math.round(b), tdee: Math.round(tdee), kcal,
-    protein: Math.round(kcal * 0.25 / 4),
-    carbs: Math.round(kcal * 0.45 / 4),
-    fat: Math.round(kcal * 0.30 / 9),
+    protein: Math.round(kcal * diet().p / 4),
+    carbs: Math.round(kcal * diet().c / 4),
+    fat: Math.round(kcal * diet().f / 9),
   };
 }
 function dayTotals(date) {
@@ -167,6 +180,34 @@ function renderDashboard() {
     </div>`).join('');
 }
 
+function renderWeek() {
+  const tg = targets();
+  $('#dietTip').textContent = state.profile ? `💡 ${diet().tip}` : '';
+  const days = Array.from({ length: 7 }, (_, i) => shiftDate(currentDate, i - 6));
+  const data = days.map(d => { const t = dayTotals(d); return { d, kcal: t.kcal, goal: tg ? tg.kcal + t.burned : null }; });
+  const W = 360, H = 170, pad = { l: 4, r: 4, t: 18, b: 22 };
+  const max = Math.max(...data.map(x => Math.max(x.kcal, x.goal || 0)), 500) * 1.1;
+  const bw = (W - pad.l - pad.r) / 7;
+  const y = v => pad.t + (1 - v / max) * (H - pad.t - pad.b);
+  const label = d => { const [yy, m, dd] = d.split('-').map(Number); return new Date(yy, m - 1, dd).toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', ''); };
+  $('#weekChart').innerHTML = `<svg viewBox="0 0 ${W} ${H}">
+    ${data.map((x, i) => {
+      const cx = pad.l + i * bw, over = x.goal && x.kcal > x.goal;
+      return `<rect x="${cx + bw * 0.2}" y="${y(x.kcal)}" width="${bw * 0.6}" height="${Math.max(0, y(0) - y(x.kcal))}" rx="6"
+          fill="${over ? 'var(--danger)' : 'var(--primary)'}" opacity="${x.d === currentDate ? 1 : 0.75}"><title>${x.kcal} kcal</title></rect>
+        ${x.goal ? `<line x1="${cx + bw * 0.1}" x2="${cx + bw * 0.9}" y1="${y(x.goal)}" y2="${y(x.goal)}" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3"/>` : ''}
+        ${x.kcal ? `<text x="${cx + bw / 2}" y="${y(x.kcal) - 5}" text-anchor="middle">${Math.round(x.kcal)}</text>` : ''}
+        <text x="${cx + bw / 2}" y="${H - 8}" text-anchor="middle">${label(x.d)}</text>`;
+    }).join('')}
+  </svg>`;
+  const logged = data.filter(x => x.kcal > 0);
+  if (!logged.length) { $('#weekSummary').textContent = 'Aucun repas enregistré cette semaine.'; return; }
+  const avg = Math.round(logged.reduce((a, x) => a + x.kcal, 0) / logged.length);
+  const ok = tg ? logged.filter(x => x.kcal <= x.goal).length : null;
+  $('#weekSummary').textContent = `Moyenne : ${avg} kcal/jour sur ${logged.length} jour(s) renseigné(s)`
+    + (tg ? ` · objectif respecté ${ok}/${logged.length} jour(s)` : '') + '. Pointillés orange = objectif.';
+}
+
 function renderMeals() {
   $('#mealsDate').textContent = fmtDate(currentDate);
   const meals = state.meals[currentDate] || [];
@@ -247,7 +288,7 @@ function renderProfile() {
 }
 
 function renderAll() {
-  renderDashboard(); renderMeals(); renderWeight(); renderActivity(); renderProfile();
+  renderDashboard(); renderWeek(); renderMeals(); renderWeight(); renderActivity(); renderProfile();
 }
 
 // ---------- Navigation ----------
@@ -313,7 +354,7 @@ $('#profileForm').addEventListener('submit', e => {
   state.profile = {
     sex: f.sex.value, age: num(f.age.value), height: num(f.height.value),
     startWeight: num(f.startWeight.value), goalWeight: num(f.goalWeight.value),
-    activity: num(f.activity.value), goal: num(f.goal.value), waterGoal: num(f.waterGoal.value) || 8,
+    activity: num(f.activity.value), goal: num(f.goal.value), diet: f.diet.value, waterGoal: num(f.waterGoal.value) || 8,
   };
   save(); renderAll(); showTab('dashboard');
 });
@@ -356,3 +397,9 @@ $('#resetBtn').addEventListener('click', () => {
 $('#weightForm').elements.date.value = todayStr();
 renderAll();
 if (!state.profile) showTab('profile');
+
+// Demande au navigateur de conserver les données, et mode hors ligne
+navigator.storage?.persist?.().catch(() => {});
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}

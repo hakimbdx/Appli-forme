@@ -2,19 +2,27 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Appli Forme — Suivi santé & régime</title>
+  <meta name="theme-color" content="#2e9b5f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Forme" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" href="icons/icon-192.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="topbar">
     <h1>🥗 Appli Forme</h1>
     <nav>
-      <button data-tab="dashboard" class="active">Tableau de bord</button>
-      <button data-tab="meals">Repas</button>
-      <button data-tab="weight">Poids</button>
-      <button data-tab="activity">Activité</button>
-      <button data-tab="profile">Profil</button>
+      <button data-tab="dashboard" class="active"><span class="ico">🏠</span><span>Aujourd'hui</span></button>
+      <button data-tab="meals"><span class="ico">🍽️</span><span>Repas</span></button>
+      <button data-tab="weight"><span class="ico">⚖️</span><span>Poids</span></button>
+      <button data-tab="activity"><span class="ico">🏃‍♀️</span><span>Activité</span></button>
+      <button data-tab="profile"><span class="ico">👤</span><span>Profil</span></button>
     </nav>
   </header>
 
@@ -58,6 +66,12 @@
       <div class="card">
         <h3>Macronutriments du jour</h3>
         <div id="macros"></div>
+        <p id="dietTip" class="muted hint"></p>
+      </div>
+      <div class="card">
+        <h3>Mes 7 derniers jours</h3>
+        <div id="weekChart" class="chart"></div>
+        <p id="weekSummary" class="muted hint"></p>
       </div>
     </section>
 
@@ -159,6 +173,14 @@
               <option value="-250">Perdre doucement (−0,25 kg/sem.)</option>
               <option value="0">Maintenir</option>
               <option value="250">Prendre du poids (+0,25 kg/sem.)</option>
+            </select>
+          </label>
+          <label>Type de régime
+            <select name="diet">
+              <option value="balanced">Équilibré (rééquilibrage alimentaire)</option>
+              <option value="protein">Riche en protéines</option>
+              <option value="lowcarb">Pauvre en glucides (low carb)</option>
+              <option value="mediterranean">Méditerranéen</option>
             </select>
           </label>
           <label>Objectif d'eau (verres) <input name="waterGoal" type="number" min="1" max="20" value="8" /></label>
