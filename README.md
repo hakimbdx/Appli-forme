@@ -14,6 +14,7 @@ Application web de **suivi santé et régime**, en français, sans dépendances 
 - **Produits du commerce** : recherche et scan de code-barres via [Open Food Facts](https://fr.openfoodfacts.org) (gratuit, sans compte) ; les produits utilisés sont mémorisés.
 - **Bilan sur 7 jours** : calories par jour comparées à l'objectif.
 - **Données** : stockées localement dans le navigateur, export / import JSON.
+- **Apple Forme / Santé** : import des calories actives, minutes d'exercice, pas et pesée du jour via un raccourci iOS « Synchro Forme » (instructions dans l'onglet Activité).
 - **iPhone** : installable sur l'écran d'accueil (PWA), barre d'onglets en bas, fonctionne hors ligne.
 
 ## Lancer l'application

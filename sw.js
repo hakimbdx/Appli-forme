@@ -1,5 +1,5 @@
 // Service worker : fonctionnement hors ligne (réseau d'abord, cache en secours)
-const CACHE = 'appli-forme-v3';
+const CACHE = 'appli-forme-v4';
 const ASSETS = ['./', 'index.html', 'styles.css', 'app.js', 'foods.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'lib/html5-qrcode.min.js'];
 

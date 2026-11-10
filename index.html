@@ -134,6 +134,34 @@
     <!-- Activité -->
     <section id="activity" class="tab">
       <div class="card">
+        <h3>❤️ Apple Forme / Santé</h3>
+        <p class="muted hint" style="margin-top:0">Importez les calories actives, les minutes d'exercice, les pas et la pesée du jour enregistrés par votre iPhone ou votre Apple Watch.</p>
+        <div class="row sync-row">
+          <button id="syncRun" class="primary">🔄 1. Récupérer mes données</button>
+          <button id="syncImport">📋 2. Importer</button>
+        </div>
+        <p id="syncStatus" class="muted hint"></p>
+        <details id="syncPaste">
+          <summary>L'import ne marche pas ? Coller à la main</summary>
+          <textarea id="syncText" rows="3" placeholder="Collez ici le texte copié par le raccourci"></textarea>
+          <button id="syncPasteBtn">Importer ce texte</button>
+        </details>
+        <details>
+          <summary>Installer le raccourci « Synchro Forme » (une seule fois)</summary>
+          <ol class="steps">
+            <li>Ouvrez l'app <strong>Raccourcis</strong>, touchez <strong>+</strong> et nommez le raccourci exactement <strong>Synchro Forme</strong>.</li>
+            <li>Ajoutez l'action <strong>Rechercher des échantillons de santé</strong> : type <em>Énergie active</em>, filtre <em>Date de début</em> <em>est aujourd'hui</em>, <em>Grouper par</em> <em>Jour</em>. Touchez le résultat et renommez la variable <strong>Calories</strong>.</li>
+            <li>Même action pour <em>Minutes d'exercice</em> (variable <strong>Exercice</strong>) et pour <em>Nombre de pas</em> (variable <strong>Pas</strong>), avec les mêmes réglages.</li>
+            <li>Même action pour <em>Poids</em> : <em>Date de début est aujourd'hui</em>, trier <em>Plus récent en premier</em>, limite <em>1</em> (variable <strong>Poids</strong>).</li>
+            <li>Ajoutez une action <strong>Texte</strong> contenant :<br><code>FORME;kcal=[Calories];min=[Exercice];pas=[Pas];poids=[Poids]</code><br>(insérez chaque variable à la place des crochets).</li>
+            <li>Ajoutez <strong>Copier dans le presse-papiers</strong>, puis enregistrez.</li>
+            <li>Au premier lancement, autorisez l'accès à <strong>Santé</strong>.</li>
+          </ol>
+          <p class="muted hint">Utilisation : touchez « 1. Récupérer », revenez dans l'appli (flèche « ◀ » en haut à gauche), puis « 2. Importer » et « Coller » si l'iPhone le demande.</p>
+        </details>
+        <p class="muted hint">💡 Si vous synchronisez chaque jour, choisissez « Sédentaire » comme niveau d'activité dans votre profil : votre activité est alors comptée une seule fois.</p>
+      </div>
+      <div class="card">
         <h3>Ajouter une activité</h3>
         <form id="activityForm" class="form-grid">
           <label>Activité <input name="name" required placeholder="ex : Course à pied" /></label>
