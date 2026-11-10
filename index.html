@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Appli Forme — Suivi santé & régime</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>🥗 Appli Forme</h1>
+    <nav>
+      <button data-tab="dashboard" class="active">Tableau de bord</button>
+      <button data-tab="meals">Repas</button>
+      <button data-tab="weight">Poids</button>
+      <button data-tab="activity">Activité</button>
+      <button data-tab="profile">Profil</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Tableau de bord -->
+    <section id="dashboard" class="tab active">
+      <div class="date-row">
+        <button id="prevDay" aria-label="Jour précédent">‹</button>
+        <input type="date" id="currentDate" />
+        <button id="nextDay" aria-label="Jour suivant">›</button>
+      </div>
+      <div id="profileWarning" class="card warning hidden">
+        Complétez votre <a href="#" data-goto="profile">profil</a> pour calculer vos objectifs personnalisés.
+      </div>
+      <div class="grid">
+        <div class="card stat">
+          <h3>Calories</h3>
+          <div class="ring" id="calRing"></div>
+          <p id="calText"></p>
+        </div>
+        <div class="card stat">
+          <h3>Eau</h3>
+          <div class="big" id="waterText">0 / 8</div>
+          <div class="water-glasses" id="waterGlasses"></div>
+          <div class="row">
+            <button id="waterMinus">− verre</button>
+            <button id="waterPlus" class="primary">+ verre</button>
+          </div>
+        </div>
+        <div class="card stat">
+          <h3>Poids actuel</h3>
+          <div class="big" id="weightNow">—</div>
+          <p id="weightDelta"></p>
+        </div>
+        <div class="card stat">
+          <h3>IMC</h3>
+          <div class="big" id="bmiValue">—</div>
+          <p id="bmiLabel"></p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Macronutriments du jour</h3>
+        <div id="macros"></div>
+      </div>
+    </section>
+
+    <!-- Repas -->
+    <section id="meals" class="tab">
+      <div class="card">
+        <h3>Ajouter un aliment</h3>
+        <form id="mealForm" class="form-grid">
+          <label>Repas
+            <select name="type">
+              <option>Petit-déjeuner</option>
+              <option>Déjeuner</option>
+              <option>Dîner</option>
+              <option>Collation</option>
+            </select>
+          </label>
+          <label>Aliment <input name="name" required placeholder="ex : Salade de quinoa" /></label>
+          <label>Calories (kcal) <input name="kcal" type="number" min="0" required /></label>
+          <label>Protéines (g) <input name="protein" type="number" min="0" step="0.1" /></label>
+          <label>Glucides (g) <input name="carbs" type="number" min="0" step="0.1" /></label>
+          <label>Lipides (g) <input name="fat" type="number" min="0" step="0.1" /></label>
+          <button class="primary" type="submit">Ajouter</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Journal du <span id="mealsDate"></span></h3>
+        <div id="mealList"></div>
+      </div>
+    </section>
+
+    <!-- Poids -->
+    <section id="weight" class="tab">
+      <div class="card">
+        <h3>Enregistrer une pesée</h3>
+        <form id="weightForm" class="form-grid">
+          <label>Date <input name="date" type="date" required /></label>
+          <label>Poids (kg) <input name="kg" type="number" min="20" max="400" step="0.1" required /></label>
+          <button class="primary" type="submit">Enregistrer</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Évolution</h3>
+        <div id="weightChart" class="chart"></div>
+      </div>
+      <div class="card">
+        <h3>Historique</h3>
+        <div id="weightList"></div>
+      </div>
+    </section>
+
+    <!-- Activité -->
+    <section id="activity" class="tab">
+      <div class="card">
+        <h3>Ajouter une activité</h3>
+        <form id="activityForm" class="form-grid">
+          <label>Activité <input name="name" required placeholder="ex : Course à pied" /></label>
+          <label>Durée (min) <input name="minutes" type="number" min="1" required /></label>
+          <label>Calories brûlées <input name="kcal" type="number" min="0" required /></label>
+          <button class="primary" type="submit">Ajouter</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Activités du <span id="activityDate"></span></h3>
+        <div id="activityList"></div>
+      </div>
+    </section>
+
+    <!-- Profil -->
+    <section id="profile" class="tab">
+      <div class="card">
+        <h3>Mon profil</h3>
+        <form id="profileForm" class="form-grid">
+          <label>Sexe
+            <select name="sex">
+              <option value="f">Femme</option>
+              <option value="m">Homme</option>
+            </select>
+          </label>
+          <label>Âge <input name="age" type="number" min="10" max="120" required /></label>
+          <label>Taille (cm) <input name="height" type="number" min="100" max="250" required /></label>
+          <label>Poids de départ (kg) <input name="startWeight" type="number" min="20" max="400" step="0.1" required /></label>
+          <label>Poids objectif (kg) <input name="goalWeight" type="number" min="20" max="400" step="0.1" required /></label>
+          <label>Niveau d'activité
+            <select name="activity">
+              <option value="1.2">Sédentaire</option>
+              <option value="1.375">Légèrement actif</option>
+              <option value="1.55">Modérément actif</option>
+              <option value="1.725">Très actif</option>
+              <option value="1.9">Extrêmement actif</option>
+            </select>
+          </label>
+          <label>Objectif
+            <select name="goal">
+              <option value="-500">Perdre du poids (−0,5 kg/sem.)</option>
+              <option value="-250">Perdre doucement (−0,25 kg/sem.)</option>
+              <option value="0">Maintenir</option>
+              <option value="250">Prendre du poids (+0,25 kg/sem.)</option>
+            </select>
+          </label>
+          <label>Objectif d'eau (verres) <input name="waterGoal" type="number" min="1" max="20" value="8" /></label>
+          <button class="primary" type="submit">Enregistrer</button>
+        </form>
+        <div id="profileSummary"></div>
+      </div>
+      <div class="card">
+        <h3>Données</h3>
+        <p class="muted">Vos données restent dans ce navigateur (stockage local).</p>
+        <div class="row">
+          <button id="exportBtn">Exporter (JSON)</button>
+          <label class="file-btn">Importer <input type="file" id="importInput" accept="application/json" hidden /></label>
+          <button id="resetBtn" class="danger">Tout effacer</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
