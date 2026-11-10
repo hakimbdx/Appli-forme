@@ -34,7 +34,7 @@ body {
   position: sticky; top: 0; z-index: 10;
 }
 .topbar h1 { margin: 0 0 8px; font-size: 1.3rem; }
-nav { display: flex; gap: 6px; overflow-x: auto; }
+nav { display: flex; gap: 6px; flex-wrap: wrap; }
 nav button {
   border: none; background: transparent; color: var(--muted);
   padding: 8px 12px; border-radius: 999px; cursor: pointer; white-space: nowrap; font-size: .95rem;
@@ -86,3 +86,6 @@ input, select {
 .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
 .summary div { background: var(--primary-soft); border-radius: 10px; padding: 10px; text-align: center; }
 .summary strong { display: block; font-size: 1.3rem; }
+.hint { font-size: .85rem; margin: 10px 0 0; }
+.plan { background: var(--primary-soft); border-radius: 10px; padding: 12px; line-height: 1.5; margin: 16px 0 0; }
+#welcome { margin-top: 0; line-height: 1.5; }

@@ -87,6 +87,27 @@ function dayTotals(date) {
   return t;
 }
 
+// Explication en clair + estimation de la date d'atteinte de l'objectif
+function planText(tg) {
+  const p = state.profile, w = latestWeight();
+  const diff = round(w - p.goalWeight, 1);
+  let txt = `Votre corps dépense environ <strong>${tg.tdee} kcal</strong> par jour. `;
+  if (p.goal === 0 || diff === 0) {
+    txt += `Pour garder votre poids, mangez environ <strong>${tg.kcal} kcal</strong> par jour.`;
+  } else {
+    const weekly = (tg.tdee - tg.kcal) * 7 / 7700; // kg perdus (+) ou pris (−) par semaine
+    txt += `En mangeant environ <strong>${tg.kcal} kcal</strong> par jour, `;
+    if ((diff > 0 && weekly > 0) || (diff < 0 && weekly < 0)) {
+      const weeks = Math.ceil(Math.abs(diff / weekly));
+      const end = new Date(); end.setDate(end.getDate() + weeks * 7);
+      txt += `vous ${diff > 0 ? 'perdrez' : 'prendrez'} environ ${round(Math.abs(weekly), 2).toLocaleString('fr-FR')} kg par semaine : objectif de ${p.goalWeight} kg atteint en <strong>${weeks} semaines</strong> environ (vers le ${end.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}).`;
+    } else {
+      txt += `vous vous éloignerez de votre poids objectif : vérifiez le choix « Objectif ».`;
+    }
+  }
+  return `<p class="plan">${txt}</p>`;
+}
+
 // ---------- Rendu ----------
 function renderDashboard() {
   $('#currentDate').value = currentDate;
@@ -215,8 +236,9 @@ function renderProfile() {
   const p = state.profile;
   const f = $('#profileForm');
   if (p) for (const k of Object.keys(p)) if (f.elements[k]) f.elements[k].value = p[k];
+  $('#welcome').classList.toggle('hidden', !!p);
   const tg = targets();
-  $('#profileSummary').innerHTML = tg ? `<div class="summary">
+  $('#profileSummary').innerHTML = tg ? `${planText(tg)}<div class="summary">
     <div>Métabolisme de base<strong>${tg.bmr} kcal</strong></div>
     <div>Dépense journalière<strong>${tg.tdee} kcal</strong></div>
     <div>Objectif calorique<strong>${tg.kcal} kcal</strong></div>
@@ -241,11 +263,28 @@ $('#prevDay').addEventListener('click', () => { currentDate = shiftDate(currentD
 $('#nextDay').addEventListener('click', () => { currentDate = shiftDate(currentDate, 1); renderAll(); });
 
 // ---------- Formulaires ----------
+// Base d'aliments : remplissage automatique des valeurs selon la quantité
+$('#foodList').innerHTML = FOODS.map(f => `<option value="${esc(f[0])}">${f[1]} kcal / 100 g</option>`).join('');
+function autofillFood() {
+  const f = $('#mealForm').elements;
+  const food = FOODS.find(x => x[0].toLowerCase() === f.name.value.trim().toLowerCase());
+  const g = num(f.grams.value);
+  if (!food || !g) return;
+  const k = g / 100;
+  f.kcal.value = Math.round(food[1] * k);
+  f.protein.value = round(food[2] * k, 1);
+  f.carbs.value = round(food[3] * k, 1);
+  f.fat.value = round(food[4] * k, 1);
+}
+$('#mealForm').elements.name.addEventListener('input', autofillFood);
+$('#mealForm').elements.grams.addEventListener('input', autofillFood);
+
 $('#mealForm').addEventListener('submit', e => {
   e.preventDefault();
   const f = e.target.elements;
   (state.meals[currentDate] ||= []).push({
-    id: uid(), type: f.type.value, name: f.name.value.trim(),
+    id: uid(), type: f.type.value,
+    name: f.name.value.trim() + (num(f.grams.value) ? ` (${num(f.grams.value)} g)` : ''),
     kcal: num(f.kcal.value), protein: num(f.protein.value), carbs: num(f.carbs.value), fat: num(f.fat.value),
   });
   save(); e.target.reset(); f.type.focus(); renderAll();
@@ -276,7 +315,7 @@ $('#profileForm').addEventListener('submit', e => {
     startWeight: num(f.startWeight.value), goalWeight: num(f.goalWeight.value),
     activity: num(f.activity.value), goal: num(f.goal.value), waterGoal: num(f.waterGoal.value) || 8,
   };
-  save(); renderAll();
+  save(); renderAll(); showTab('dashboard');
 });
 
 // Suppressions (délégation)
@@ -316,3 +355,4 @@ $('#resetBtn').addEventListener('click', () => {
 // ---------- Init ----------
 $('#weightForm').elements.date.value = todayStr();
 renderAll();
+if (!state.profile) showTab('profile');

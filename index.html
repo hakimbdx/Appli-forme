@@ -74,13 +74,16 @@
               <option>Collation</option>
             </select>
           </label>
-          <label>Aliment <input name="name" required placeholder="ex : Salade de quinoa" /></label>
+          <label>Aliment <input name="name" required list="foodList" autocomplete="off" placeholder="Tapez : pâtes, pomme…" /></label>
+          <label>Quantité (g ou ml) <input name="grams" type="number" min="0" placeholder="ex : 150" /></label>
           <label>Calories (kcal) <input name="kcal" type="number" min="0" required /></label>
           <label>Protéines (g) <input name="protein" type="number" min="0" step="0.1" /></label>
           <label>Glucides (g) <input name="carbs" type="number" min="0" step="0.1" /></label>
           <label>Lipides (g) <input name="fat" type="number" min="0" step="0.1" /></label>
           <button class="primary" type="submit">Ajouter</button>
         </form>
+        <datalist id="foodList"></datalist>
+        <p class="muted hint">Choisissez un aliment de la liste et indiquez la quantité : les calories se calculent automatiquement. Pour un autre aliment, saisissez les valeurs de l'étiquette.</p>
       </div>
       <div class="card">
         <h3>Journal du <span id="mealsDate"></span></h3>
@@ -129,6 +132,7 @@
     <section id="profile" class="tab">
       <div class="card">
         <h3>Mon profil</h3>
+        <p id="welcome" class="muted hidden">👋 Bienvenue ! Renseignez ces quelques informations : l'application calcule combien de calories vous dépensez par jour et combien en manger pour atteindre votre objectif.</p>
         <form id="profileForm" class="form-grid">
           <label>Sexe
             <select name="sex">
@@ -174,6 +178,7 @@
     </section>
   </main>
 
+  <script src="foods.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
