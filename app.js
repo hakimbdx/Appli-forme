@@ -6,7 +6,8 @@ const defaultState = () => ({
   meals: {},     // { 'YYYY-MM-DD': [{id, type, name, kcal, protein, carbs, fat}] }
   water: {},     // { 'YYYY-MM-DD': n }
   weights: [],   // [{date, kg}]
-  activities: {} // { 'YYYY-MM-DD': [{id, name, minutes, kcal}] }
+  activities: {}, // { 'YYYY-MM-DD': [{id, name, minutes, kcal}] }
+  customFoods: [] // produits mémorisés : [nom, kcal, prot, gluc, lip] pour 100 g
 });
 
 let state = load();
@@ -305,10 +306,13 @@ $('#nextDay').addEventListener('click', () => { currentDate = shiftDate(currentD
 
 // ---------- Formulaires ----------
 // Base d'aliments : remplissage automatique des valeurs selon la quantité
-$('#foodList').innerHTML = FOODS.map(f => `<option value="${esc(f[0])}">${f[1]} kcal / 100 g</option>`).join('');
+const allFoods = () => [...(state.customFoods || []), ...FOODS];
+function renderFoodList() {
+  $('#foodList').innerHTML = allFoods().map(f => `<option value="${esc(f[0])}">${f[1]} kcal / 100 g</option>`).join('');
+}
 function autofillFood() {
   const f = $('#mealForm').elements;
-  const food = FOODS.find(x => x[0].toLowerCase() === f.name.value.trim().toLowerCase());
+  const food = allFoods().find(x => x[0].toLowerCase() === f.name.value.trim().toLowerCase());
   const g = num(f.grams.value);
   if (!food || !g) return;
   const k = g / 100;
@@ -319,6 +323,135 @@ function autofillFood() {
 }
 $('#mealForm').elements.name.addEventListener('input', autofillFood);
 $('#mealForm').elements.grams.addEventListener('input', autofillFood);
+renderFoodList();
+
+// ---------- Open Food Facts : recherche et code-barres ----------
+const OFF_FIELDS = 'code,product_name,product_name_fr,brands,nutriments,serving_quantity';
+let offResults = [];
+
+function offToFood(p) {
+  const n = p.nutriments || {};
+  let kcal = n['energy-kcal_100g'];
+  if (kcal == null && n.energy_100g != null) kcal = n.energy_100g / 4.184; // kJ → kcal
+  if (kcal == null) return null;
+  const name = (p.product_name_fr || p.product_name || '').trim();
+  if (!name) return null;
+  const brand = (p.brands || '').split(',')[0].trim();
+  return {
+    name: brand && !name.toLowerCase().includes(brand.toLowerCase()) ? `${name} – ${brand}` : name,
+    kcal: Math.round(kcal), p: round(num(n.proteins_100g), 1), c: round(num(n.carbohydrates_100g), 1),
+    f: round(num(n.fat_100g), 1), serving: num(p.serving_quantity) || null,
+  };
+}
+async function offSearch(q) {
+  const url = `https://fr.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}`
+    + `&search_simple=1&action=process&json=1&page_size=20&fields=${OFF_FIELDS}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(r.status);
+  const d = await r.json();
+  return (d.products || []).map(offToFood).filter(Boolean);
+}
+async function offBarcode(code) {
+  const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=${OFF_FIELDS}`);
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(r.status);
+  const d = await r.json();
+  return d.status === 1 ? offToFood(d.product) : null;
+}
+function offStatus(msg) { $('#offResults').innerHTML = msg ? `<p class="muted hint">${msg}</p>` : ''; }
+function renderOffResults() {
+  if (!offResults.length) { offStatus('Aucun produit trouvé. Essayez un autre mot, ou saisissez les valeurs de l\'étiquette.'); return; }
+  $('#offResults').innerHTML = `<div class="results">${offResults.map((x, i) => `
+    <button type="button" class="result" data-off="${i}">
+      <span>${esc(x.name)}</span><small>${x.kcal} kcal / 100 g</small>
+    </button>`).join('')}</div>`;
+}
+function selectFood(food) {
+  const entry = [food.name, food.kcal, food.p, food.c, food.f];
+  state.customFoods = [entry, ...(state.customFoods || []).filter(x => x[0] !== food.name)].slice(0, 200);
+  save(); renderFoodList();
+  const f = $('#mealForm').elements;
+  f.name.value = food.name;
+  f.grams.value = food.serving || 100;
+  autofillFood();
+  offResults = []; offStatus(`✅ ${esc(food.name)} : ${food.kcal} kcal / 100 g. Ajustez la quantité puis « Ajouter ».`);
+  $('#offQuery').value = '';
+  f.grams.focus(); f.grams.select();
+}
+const offError = e => offStatus(navigator.onLine === false
+  ? 'Pas de connexion internet : la recherche de produits n\'est pas disponible.'
+  : 'Le service Open Food Facts ne répond pas, réessayez dans un instant.');
+
+$('#offForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const q = $('#offQuery').value.trim();
+  if (q.length < 2) return;
+  $('#offQuery').blur();
+  offStatus('Recherche…');
+  try {
+    // Un code-barres tapé à la main fonctionne aussi
+    if (/^\d{8,14}$/.test(q)) {
+      const food = await offBarcode(q);
+      offResults = food ? [food] : [];
+    } else offResults = await offSearch(q);
+    renderOffResults();
+  } catch (err) { offError(err); }
+});
+$('#offResults').addEventListener('click', e => {
+  const b = e.target.closest('[data-off]');
+  if (b) selectFood(offResults[Number(b.dataset.off)]);
+});
+
+// Scanner (bibliothèque chargée seulement à la demande)
+let scanner = null, scanBusy = false;
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    if (window.Html5Qrcode) return res();
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+async function openScanner() {
+  scanBusy = false;
+  $('#scanModal').classList.remove('hidden');
+  $('#scanStatus').textContent = 'Ouverture de la caméra…';
+  try {
+    await loadScript('lib/html5-qrcode.min.js');
+    const F = Html5QrcodeSupportedFormats;
+    scanner = new Html5Qrcode('reader', {
+      formatsToSupport: [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E], verbose: false,
+      experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+    });
+    await scanner.start({ facingMode: 'environment' },
+      { fps: 10, qrbox: (w, h) => ({ width: Math.min(w * 0.85, 300), height: Math.min(h * 0.5, 140) }) },
+      onScan, () => {});
+    $('#scanStatus').textContent = 'Visez le code-barres du produit.';
+  } catch {
+    $('#scanStatus').textContent = 'Impossible d\'utiliser la caméra. Sur iPhone : Réglages › Safari › Caméra › Autoriser.';
+  }
+}
+async function closeScanner() {
+  if (scanner) {
+    try { await scanner.stop(); } catch {}
+    try { scanner.clear(); } catch {}
+    scanner = null;
+  }
+  $('#scanModal').classList.add('hidden');
+}
+async function onScan(code) {
+  if (scanBusy) return;
+  scanBusy = true;
+  await closeScanner();
+  offStatus(`Code-barres ${esc(code)} : recherche…`);
+  try {
+    const food = await offBarcode(code);
+    if (food) selectFood(food);
+    else offStatus(`Produit ${esc(code)} introuvable dans Open Food Facts. Saisissez les valeurs de l'étiquette.`);
+  } catch (err) { offError(err); }
+}
+$('#scanBtn').addEventListener('click', openScanner);
+$('#scanClose').addEventListener('click', closeScanner);
 
 $('#mealForm').addEventListener('submit', e => {
   e.preventDefault();
@@ -328,7 +461,8 @@ $('#mealForm').addEventListener('submit', e => {
     name: f.name.value.trim() + (num(f.grams.value) ? ` (${num(f.grams.value)} g)` : ''),
     kcal: num(f.kcal.value), protein: num(f.protein.value), carbs: num(f.carbs.value), fat: num(f.fat.value),
   });
-  save(); e.target.reset(); f.type.focus(); renderAll();
+  const type = f.type.value;
+  save(); e.target.reset(); f.type.value = type; offStatus(''); renderAll();
 });
 
 $('#weightForm').addEventListener('submit', e => {

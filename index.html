@@ -79,6 +79,12 @@
     <section id="meals" class="tab">
       <div class="card">
         <h3>Ajouter un aliment</h3>
+        <form id="offForm" class="search-row">
+          <input id="offQuery" type="search" placeholder="Chercher un produit : skyr, granola…" enterkeyhint="search" autocomplete="off" />
+          <button class="primary" type="submit" aria-label="Rechercher">🔍</button>
+          <button type="button" id="scanBtn">📷 Scanner</button>
+        </form>
+        <div id="offResults"></div>
         <form id="mealForm" class="form-grid">
           <label>Repas
             <select name="type">
@@ -97,7 +103,7 @@
           <button class="primary" type="submit">Ajouter</button>
         </form>
         <datalist id="foodList"></datalist>
-        <p class="muted hint">Choisissez un aliment de la liste et indiquez la quantité : les calories se calculent automatiquement. Pour un autre aliment, saisissez les valeurs de l'étiquette.</p>
+        <p class="muted hint">Cherchez un produit ou scannez son code-barres (données <a href="https://fr.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a>), ou tapez un aliment courant, puis indiquez la quantité : les calories se calculent automatiquement. Les produits utilisés sont mémorisés dans la liste.</p>
       </div>
       <div class="card">
         <h3>Journal du <span id="mealsDate"></span></h3>
@@ -199,6 +205,15 @@
       </div>
     </section>
   </main>
+
+  <div id="scanModal" class="modal hidden" role="dialog" aria-label="Scanner un code-barres">
+    <div class="modal-box">
+      <h3>Scanner un code-barres</h3>
+      <div id="reader"></div>
+      <p id="scanStatus" class="muted hint"></p>
+      <button id="scanClose">Annuler</button>
+    </div>
+  </div>
 
   <script src="foods.js"></script>
   <script src="app.js"></script>

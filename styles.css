@@ -113,3 +113,18 @@ main { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16
   .ring { width: 110px; height: 110px; }
   .card { padding: 14px; }
 }
+
+/* Recherche de produits et scanner */
+.search-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.search-row input { flex: 1; min-width: 0; }
+.search-row button { white-space: nowrap; }
+.results { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 10px; max-height: 320px; overflow-y: auto; margin-bottom: 12px; }
+.result { display: flex; justify-content: space-between; gap: 8px; text-align: left; border: none; border-bottom: 1px solid var(--border); border-radius: 0; padding: 10px 12px; background: var(--card); }
+.result:last-child { border-bottom: none; }
+.result small { color: var(--muted); white-space: nowrap; }
+#offResults .hint { margin: 0 0 12px; }
+.modal { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.modal-box { background: var(--card); border-radius: var(--radius); padding: 16px; width: 100%; max-width: 420px; text-align: center; }
+#reader { width: 100%; border-radius: 10px; overflow: hidden; background: #000; min-height: 200px; }
+#reader video { width: 100% !important; }
+a { color: var(--primary); }

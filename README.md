@@ -11,6 +11,7 @@ Application web de **suivi santé et régime**, en français, sans dépendances 
 - **Profil** : calcul du métabolisme de base (Mifflin-St Jeor), de la dépense journalière et d'un objectif calorique selon le but (perte, maintien, prise).
 - **Types de régime** : équilibré, riche en protéines, pauvre en glucides, méditerranéen (répartition des macros et conseils adaptés).
 - **Base d'aliments** : ~50 aliments courants, calories et macros calculées selon la quantité.
+- **Produits du commerce** : recherche et scan de code-barres via [Open Food Facts](https://fr.openfoodfacts.org) (gratuit, sans compte) ; les produits utilisés sont mémorisés.
 - **Bilan sur 7 jours** : calories par jour comparées à l'objectif.
 - **Données** : stockées localement dans le navigateur, export / import JSON.
 - **iPhone** : installable sur l'écran d'accueil (PWA), barre d'onglets en bas, fonctionne hors ligne.
@@ -29,5 +30,9 @@ python3 -m http.server 8000
 1. Ouvrir l'adresse de l'application dans **Safari**.
 2. Bouton **Partager** → **Sur l'écran d'accueil** → **Ajouter**.
 3. Lancer l'appli depuis l'icône « Forme ».
+
+## Bibliothèques
+
+- [html5-qrcode](https://github.com/mebjas/html5-qrcode) 2.3.8 (Apache-2.0), dans `lib/`, chargée seulement à l'ouverture du scanner.
 
 > Les estimations sont indicatives et ne remplacent pas l'avis d'un professionnel de santé.
