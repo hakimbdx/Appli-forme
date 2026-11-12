@@ -16,7 +16,10 @@
 </head>
 <body>
   <header class="topbar">
-    <h1>🥗 Appli Forme</h1>
+    <div class="topbar-row">
+      <h1>🥗 Appli Forme</h1>
+      <button id="syncHeaderBtn" class="sync-btn" type="button" aria-label="Synchro avec l'app Forme">❤️ Synchro<span id="syncDot" class="sync-dot hidden"></span></button>
+    </div>
     <nav>
       <button data-tab="dashboard" class="active"><span class="ico">🏠</span><span>Aujourd'hui</span></button>
       <button data-tab="meals"><span class="ico">🍽️</span><span>Repas</span></button>
@@ -206,33 +209,9 @@
       </div>
 
       <div id="sub-log" class="sub hidden">
-      <div class="card">
-        <h3>❤️ Apple Forme / Santé</h3>
-        <p class="muted hint" style="margin-top:0">Importez les calories actives, les minutes d'exercice, les pas et la pesée du jour enregistrés par votre iPhone ou votre Apple Watch.</p>
-        <div class="row sync-row">
-          <button id="syncRun" class="primary">🔄 1. Récupérer mes données</button>
-          <button id="syncImport">📋 2. Importer</button>
-        </div>
-        <p id="syncStatus" class="muted hint"></p>
-        <details id="syncPaste">
-          <summary>L'import ne marche pas ? Coller à la main</summary>
-          <textarea id="syncText" rows="3" placeholder="Collez ici le texte copié par le raccourci"></textarea>
-          <button id="syncPasteBtn">Importer ce texte</button>
-        </details>
-        <details>
-          <summary>Installer le raccourci « Synchro Forme » (une seule fois)</summary>
-          <ol class="steps">
-            <li>Ouvrez l'app <strong>Raccourcis</strong>, touchez <strong>+</strong> et nommez le raccourci exactement <strong>Synchro Forme</strong>.</li>
-            <li>Ajoutez l'action <strong>Rechercher des échantillons de santé</strong> : type <em>Énergie active</em>, filtre <em>Date de début</em> <em>est aujourd'hui</em>, <em>Grouper par</em> <em>Jour</em>. Touchez le résultat et renommez la variable <strong>Calories</strong>.</li>
-            <li>Même action pour <em>Minutes d'exercice</em> (variable <strong>Exercice</strong>) et pour <em>Nombre de pas</em> (variable <strong>Pas</strong>), avec les mêmes réglages.</li>
-            <li>Même action pour <em>Poids</em> : <em>Date de début est aujourd'hui</em>, trier <em>Plus récent en premier</em>, limite <em>1</em> (variable <strong>Poids</strong>).</li>
-            <li>Ajoutez une action <strong>Texte</strong> contenant :<br><code>FORME;kcal=[Calories];min=[Exercice];pas=[Pas];poids=[Poids]</code><br>(insérez chaque variable à la place des crochets).</li>
-            <li>Ajoutez <strong>Copier dans le presse-papiers</strong>, puis enregistrez.</li>
-            <li>Au premier lancement, autorisez l'accès à <strong>Santé</strong>.</li>
-          </ol>
-          <p class="muted hint">Utilisation : touchez « 1. Récupérer », revenez dans l'appli (flèche « ◀ » en haut à gauche), puis « 2. Importer » et « Coller » si l'iPhone le demande.</p>
-        </details>
-        <p class="muted hint">💡 Si vous synchronisez chaque jour, choisissez « Sédentaire » comme niveau d'activité dans votre profil : votre activité est alors comptée une seule fois.</p>
+      <div class="card sync-link">
+        <div><strong>❤️ Synchro avec l'app Forme</strong><br><small class="muted">Calories actives, exercice, pas, pesée et course du jour</small></div>
+        <button type="button" class="primary" data-goto-tab="sync">Ouvrir</button>
       </div>
       <div class="card">
         <h3>Ajouter une activité</h3>
@@ -269,6 +248,50 @@
         <div id="labHistory"></div>
       </div>
       <p class="muted hint disclaimer">⚠️ Ces informations sont indicatives et ne remplacent pas l'interprétation de votre médecin, qui tient compte de votre situation. Les valeurs de référence sont celles de votre laboratoire quand elles sont lues dans le PDF, sinon des valeurs usuelles pour un adulte.</p>
+    </section>
+
+    <!-- Synchro Forme -->
+    <section id="sync" class="tab">
+      <div class="sync-hero">
+        <h2>❤️ Synchro Forme</h2>
+        <p>Récupère les données de ton iPhone et de ton Apple Watch : calories actives, minutes d'exercice, pas, pesée et course du jour.</p>
+        <div class="sync-actions">
+          <button id="syncRun" type="button">🔄 1. Récupérer</button>
+          <button id="syncImport" type="button">📋 2. Importer</button>
+        </div>
+        <p id="syncStatus" class="sync-status"></p>
+      </div>
+      <div id="syncRunAsk" class="card hidden"></div>
+      <div class="card">
+        <h3>Aujourd'hui</h3>
+        <div id="syncToday" class="sync-tiles"></div>
+      </div>
+      <div class="card" id="syncHistoryCard">
+        <h3>Dernières synchronisations</h3>
+        <div id="syncHistory"></div>
+      </div>
+      <div class="card">
+        <h3>Installer le raccourci (une seule fois)</h3>
+        <ol class="steps">
+          <li>Ouvre l'app <strong>Raccourcis</strong>, touche <strong>+</strong> et nomme le raccourci exactement <strong>Synchro Forme</strong>.</li>
+          <li>Ajoute l'action <strong>Rechercher des échantillons de santé</strong> : type <em>Énergie active</em>, filtre <em>Date de début</em> <em>est aujourd'hui</em>, <em>Grouper par</em> <em>Jour</em>. Touche le résultat et renomme la variable <strong>Calories</strong>.</li>
+          <li>Même action pour <em>Minutes d'exercice</em> (variable <strong>Exercice</strong>) et pour <em>Nombre de pas</em> (variable <strong>Pas</strong>), avec les mêmes réglages.</li>
+          <li>Même action pour <em>Poids</em> : <em>Date de début est aujourd'hui</em>, trier <em>Plus récent en premier</em>, limite <em>1</em> (variable <strong>Poids</strong>).</li>
+          <li><em>Facultatif, pour la course :</em> ajoute une recherche d'<strong>entraînements</strong> (type <em>Entraînements</em> dans la même action, ou action <em>Rechercher des entraînements</em> selon la version d'iOS) : <em>Date de début est aujourd'hui</em>, type <em>Course</em>, plus récent en premier, limite <em>1</em> (variable <strong>Course</strong>).</li>
+          <li>Ajoute une action <strong>Texte</strong> contenant :<br><code>FORME;kcal=[Calories];min=[Exercice];pas=[Pas];poids=[Poids]</code><br>
+            et, si tu as fait l'étape 5 : <code>;course=[Course › Distance];duree=[Course › Durée]</code><br>
+            (insère chaque variable à la place des crochets ; pour la course, touche la variable et choisis la propriété Distance ou Durée).</li>
+          <li>Ajoute <strong>Copier dans le presse-papiers</strong>, puis enregistre.</li>
+          <li>Au premier lancement, autorise l'accès à <strong>Santé</strong>.</li>
+        </ol>
+        <p class="muted hint">Utilisation : « 1. Récupérer » lance le raccourci ; reviens ici (flèche « ◀ » en haut à gauche ou en changeant d'app), puis « 2. Importer » et « Coller » si l'iPhone le demande.</p>
+        <details id="syncPaste">
+          <summary>L'import ne marche pas ? Coller à la main</summary>
+          <textarea id="syncText" rows="3" placeholder="Colle ici le texte copié par le raccourci"></textarea>
+          <button id="syncPasteBtn" type="button">Importer ce texte</button>
+        </details>
+      </div>
+      <p class="muted hint disclaimer">💡 Si tu synchronises chaque jour, choisis « Sédentaire » comme niveau d'activité dans ton profil : ton activité est alors comptée une seule fois dans ton budget calories.</p>
     </section>
 
     <!-- Profil -->
@@ -384,6 +407,8 @@
   <script src="coach.js"></script>
   <script src="progression.js"></script>
   <script src="progress-ui.js"></script>
+  <script src="healthsync.js"></script>
+  <script src="sync.js"></script>
   <script src="sport.js"></script>
 </body>
 </html>

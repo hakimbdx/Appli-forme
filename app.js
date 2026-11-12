@@ -295,6 +295,7 @@ function renderAll() {
   if (typeof renderLabs === 'function') renderLabs();
   if (typeof renderSportHistory === 'function') renderSportHistory();
   if (typeof renderProgress === 'function') renderProgress();
+  if (typeof renderSync === 'function') renderSync();
 }
 
 // ---------- Navigation ----------
@@ -304,6 +305,7 @@ function showTab(id) {
 }
 document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
 document.querySelectorAll('[data-goto]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); showTab(a.dataset.goto); }));
+document.addEventListener('click', e => { const b = e.target.closest('[data-goto-tab]'); if (b) { showTab(b.dataset.gotoTab); window.scrollTo(0, 0); } });
 
 $('#currentDate').addEventListener('change', e => { if (e.target.value) { currentDate = e.target.value; renderAll(); } });
 $('#prevDay').addEventListener('click', () => { currentDate = shiftDate(currentDate, -1); renderAll(); });
@@ -507,71 +509,6 @@ document.addEventListener('click', e => {
   else return;
   save(); renderAll();
 });
-
-// ---------- Apple Forme / Santé (via l'app Raccourcis) ----------
-const SHORTCUT_NAME = 'Synchro Forme';
-function parseHealthText(txt) {
-  if (!/FORME/i.test(txt || '')) return null;
-  const get = key => {
-    const m = txt.match(new RegExp(key + '\\s*=\\s*([^;\\n]*)', 'i'));
-    if (!m) return null;
-    // "1 234,5 kcal" → 1234.5
-    const v = m[1].replace(/[\s\u00a0\u202f]/g, '').replace(/[^\d,.-]/g, '').replace(',', '.');
-    return v === '' || isNaN(Number(v)) ? null : Number(v);
-  };
-  return { kcal: get('kcal'), min: get('min'), pas: get('pas'), poids: get('poids') };
-}
-function importHealth(txt) {
-  const d = parseHealthText(txt);
-  if (!d) {
-    $('#syncStatus').textContent = 'Aucune donnée Forme trouvée. Lancez d\'abord « 1. Récupérer mes données ».';
-    return false;
-  }
-  const date = todayStr();
-  const list = (state.activities[date] || []).filter(a => a.id !== 'apple');
-  if (d.kcal || d.min || d.pas) {
-    list.unshift({
-      id: 'apple', name: `Apple Forme${d.pas ? ` · ${Math.round(d.pas).toLocaleString('fr-FR')} pas` : ''}`,
-      minutes: Math.round(d.min || 0), kcal: Math.round(d.kcal || 0),
-    });
-  }
-  state.activities[date] = list;
-  if (d.poids && d.poids >= 20 && d.poids <= 400) {
-    state.weights = state.weights.filter(w => w.date !== date);
-    state.weights.push({ date, kg: round(d.poids, 1) });
-  }
-  state.lastSync = new Date().toISOString();
-  save();
-  currentDate = date;
-  renderAll();
-  const parts = [];
-  if (d.kcal != null) parts.push(`${Math.round(d.kcal)} kcal actives`);
-  if (d.min != null) parts.push(`${Math.round(d.min)} min d'exercice`);
-  if (d.pas != null) parts.push(`${Math.round(d.pas).toLocaleString('fr-FR')} pas`);
-  if (d.poids) parts.push(`poids ${round(d.poids, 1)} kg`);
-  $('#syncStatus').textContent = `✅ Importé pour aujourd'hui : ${parts.join(', ') || 'aucune donnée'}.`;
-  return true;
-}
-function renderSyncStatus() {
-  if (!state.lastSync || $('#syncStatus').textContent) return;
-  $('#syncStatus').textContent = `Dernière synchronisation : ${new Date(state.lastSync).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}`;
-}
-$('#syncRun').addEventListener('click', () => {
-  $('#syncStatus').textContent = 'Revenez ici après le raccourci, puis touchez « 2. Importer ».';
-  location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(SHORTCUT_NAME)}`;
-});
-$('#syncImport').addEventListener('click', async () => {
-  try {
-    importHealth(await navigator.clipboard.readText());
-  } catch {
-    $('#syncStatus').textContent = 'Impossible de lire le presse-papiers : utilisez « Coller à la main » ci-dessous.';
-    $('#syncPaste').open = true;
-  }
-});
-$('#syncPasteBtn').addEventListener('click', () => {
-  if (importHealth($('#syncText').value)) { $('#syncText').value = ''; $('#syncPaste').open = false; }
-});
-renderSyncStatus();
 
 // Eau
 $('#waterPlus').addEventListener('click', () => { state.water[currentDate] = (state.water[currentDate] || 0) + 1; save(); renderDashboard(); });

@@ -18,7 +18,12 @@
     const out = s.history.filter(h => h.minutes && !h.run).map(h => ({ date: h.date, minutes: h.minutes, rpe: h.rpe ?? ({ '-1': 9, 0: 7, 1: 5 }[h.feedback] ?? 6) }));
     s.runs.forEach(r => out.push({ date: r.date, minutes: r.min, rpe: r.rpe ?? 5 }));
     for (const [date, list] of Object.entries(state.activities || {})) {
-      for (const a of list) if (!a.src && a.minutes > 0) out.push({ date, minutes: a.minutes, rpe: 5 });
+      // Les minutes Apple incluent les courses importées depuis l'iPhone : on ne les compte qu'une fois
+      const appleRuns = s.runs.filter(r => r.date === date && r.src === 'apple').reduce((a, r) => a + r.min, 0);
+      for (const a of list) {
+        const minutes = a.id === 'apple' ? Math.max(0, a.minutes - appleRuns) : a.minutes;
+        if (!a.src && minutes > 0) out.push({ date, minutes, rpe: 5 });
+      }
     }
     return out;
   }
@@ -184,11 +189,12 @@
     logRun({ date: f.date.value || todayStr(), km, min, rpe: Number(f.rpe.value) || 5, type: f.type.value });
     e.target.reset(); f.date.value = todayStr();
   });
-  function logRun(run) {
+  // opts.activity === false : course déjà comptée ailleurs (import Apple Santé)
+  function logRun(run, opts = {}) {
     const s = sp();
     run.id = uid();
     s.runs.push(run);
-    (state.activities[run.date] ||= []).push({ id: run.id, src: 'run', name: `🏃 Course ${String(run.km).replace('.', ',')} km`, minutes: Math.round(run.min), kcal: Math.round(run.km * (latestWeight() || 65) * 1.0) });
+    if (opts.activity !== false) (state.activities[run.date] ||= []).push({ id: run.id, src: 'run', name: `🏃 Course ${String(run.km).replace('.', ',')} km`, minutes: Math.round(run.min), kcal: Math.round(run.km * (latestWeight() || 65) * 1.0) });
     save(); renderAll();
   }
   window.SportProgress.logRun = logRun;

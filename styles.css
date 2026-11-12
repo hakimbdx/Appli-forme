@@ -315,3 +315,28 @@ details.pr-lift > summary { grid-template-columns: 1fr auto; }
 .link-btn { border: none; background: none; color: var(--sport2); padding: 4px 6px; font-size: .85rem; }
 details.pr-lift > summary { display: block; }
 details.pr-lift .pr-sug { display: block; max-width: none; text-align: left; margin-top: 4px; font-size: .82rem; }
+
+/* ===== Synchro Forme ===== */
+.topbar-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.topbar-row h1 { margin: 0; }
+.sync-btn { position: relative; border-radius: 999px; padding: 6px 12px; font-size: .85rem; font-weight: 600; border: 1px solid #f3b3c2; background: #fff0f3; color: #d6336c; }
+.sync-dot { position: absolute; top: 2px; right: 2px; width: 9px; height: 9px; border-radius: 50%; background: #d6336c; border: 2px solid var(--card); }
+@media (prefers-color-scheme: dark) { .sync-btn { background: #3a1f28; border-color: #6b2c40; color: #ff8fb1; } }
+.sync-hero { background: linear-gradient(135deg, #ff4f7b, #d6336c); color: #fff; border-radius: var(--radius); padding: 18px 16px; margin-bottom: 16px; }
+.sync-hero h2 { margin: 0 0 4px; font-size: 1.3rem; }
+.sync-hero p { margin: 0 0 14px; opacity: .92; font-size: .9rem; line-height: 1.4; }
+.sync-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sync-actions button { padding: 14px 10px; font-size: 1rem; font-weight: 700; border-radius: 14px; border: none; }
+#syncRun { background: #fff; color: #d6336c; }
+#syncImport { background: rgba(255,255,255,.2); color: #fff; border: 1px solid rgba(255,255,255,.6); }
+.sync-status { margin: 12px 0 0 !important; font-size: .85rem !important; min-height: 1.2em; }
+.sync-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; }
+.sync-tiles div { background: var(--bg); border-radius: 12px; padding: 10px 6px; text-align: center; }
+.sync-tiles span { font-size: 1.2rem; display: block; }
+.sync-tiles strong { display: block; font-size: 1.05rem; }
+.sync-tiles small { color: var(--muted); font-size: .72rem; }
+.sync-table td, .sync-table th { font-size: .78rem; padding: 5px 3px; }
+.sync-link { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.run-type button.on { background: #d6336c; color: #fff; }
+#syncRunAsk .chips button { border-color: #d6336c; color: #d6336c; }
+#syncRunAsk .run-type button.on { background: #d6336c; color: #fff; }
