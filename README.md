@@ -14,6 +14,7 @@ Application web de **suivi santé et régime**, en français, sans dépendances 
 - **Produits du commerce** : recherche et scan de code-barres via [Open Food Facts](https://fr.openfoodfacts.org) (gratuit, sans compte) ; les produits utilisés sont mémorisés.
 - **Bilan sur 7 jours** : calories par jour comparées à l'objectif.
 - **Données** : stockées localement dans le navigateur, export / import JSON.
+- **Bilans hebdomadaires** : chaque dimanche soir (à la première ouverture de l'appli à partir de 18 h), un récapitulatif rédigé sur un ton encourageant : victoires de la semaine (poids, records, régularité, séances, allure…), un seul axe d'amélioration ciblé avec un conseil concret et un défi mesurable, suivi en direct sur l'écran d'accueil et vérifié dans le bilan suivant. Partage ou copie du texte.
 - **Synchro Forme** (bouton ❤️ en haut de l'écran) : import des calories actives, minutes d'exercice, pas, pesée et course du jour (distance, durée) depuis Apple Santé via un raccourci iOS « Synchro Forme ». La course alimente le suivi des allures sans être comptée deux fois. Instructions et historique des synchronisations dans la rubrique.
 - **Analyses de sang** : import du PDF d'un bilan de laboratoire, lecture automatique d'environ 35 biomarqueurs (glycémie, HbA1c, cholestérol, fer, vitamines, thyroïde, foie, rein, NFS…), vérification avant enregistrement, synthèse des valeurs hors normes et graphiques d'évolution. Le PDF est lu sur le téléphone, rien n'est envoyé.
 - **iPhone** : installable sur l'écran d'accueil (PWA), barre d'onglets en bas, fonctionne hors ligne.
@@ -71,6 +72,15 @@ sont testés avec `npm test`. Pour ajouter un exercice : une ligne `ex(...)` dan
   monotonie, baisse de performances → 🟢 / 🟡 / 🔴, qui ajuste automatiquement la difficulté du coach.
 
 Les charges et répétitions se notent pendant la séance (lecteur) ou à la main dans l'onglet Progression.
+
+## Bilans hebdomadaires
+
+`weekly.js` (testé avec `npm test`) analyse la semaine (lundi → dimanche) et la précédente :
+repas notés, jours dans l'objectif calorique, repas responsable des dépassements, protéines, eau,
+poids, séances, records de renforcement, allure de course, pas, état de forme, bilans sanguins.
+Les victoires sont classées par importance (4 au maximum) ; l'axe d'amélioration est celui qui a le
+plus d'impact (régularité du suivi, sous-alimentation, récupération, dépassements, activité,
+protéines, hydratation, marche), avec un défi chiffré. `reports.js` génère et conserve les bilans.
 
 ## Bibliothèques
 

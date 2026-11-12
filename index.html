@@ -38,6 +38,8 @@
         <input type="date" id="currentDate" />
         <button id="nextDay" aria-label="Jour suivant">›</button>
       </div>
+      <div id="reportBanner" class="report-banner hidden"></div>
+      <div id="challengeCard" class="card challenge-card hidden"></div>
       <div id="profileWarning" class="card warning hidden">
         Complétez votre <a href="#" data-goto="profile">profil</a> pour calculer vos objectifs personnalisés.
       </div>
@@ -77,6 +79,23 @@
         <div id="weekChart" class="chart"></div>
         <p id="weekSummary" class="muted hint"></p>
       </div>
+      <div class="card">
+        <h3>📊 Mes bilans hebdomadaires</h3>
+        <p class="muted hint" style="margin-top:0">Chaque dimanche soir, un bilan de ta semaine : tes victoires et un axe d'amélioration avec un défi.</p>
+        <div id="reportList"></div>
+        <button type="button" id="reportPreview" class="link-btn">👀 Aperçu de la semaine en cours</button>
+      </div>
+    </section>
+
+    <!-- Bilan hebdomadaire -->
+    <section id="reports" class="tab">
+      <button type="button" class="link-btn back-btn" data-goto-tab="dashboard">← Retour</button>
+      <div id="reportView"></div>
+      <div class="row report-actions">
+        <button type="button" id="reportShare" class="primary">📤 Partager</button>
+        <button type="button" id="reportCopy">📋 Copier le texte</button>
+      </div>
+      <p class="muted hint disclaimer">💡 Le bilan se prépare tout seul à la première ouverture de l'appli à partir du dimanche 18 h. Pour ne pas l'oublier, crée un rappel « Bilan Appli Forme » chaque dimanche à 19 h dans l'app Rappels.</p>
     </section>
 
     <!-- Repas -->
@@ -409,6 +428,8 @@
   <script src="progress-ui.js"></script>
   <script src="healthsync.js"></script>
   <script src="sync.js"></script>
+  <script src="weekly.js"></script>
+  <script src="reports.js"></script>
   <script src="sport.js"></script>
 </body>
 </html>
