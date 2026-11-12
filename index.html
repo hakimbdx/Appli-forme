@@ -141,12 +141,14 @@
         </div>
         <div class="subnav" role="tablist">
           <button data-sub="coach" class="active" role="tab">🤖 Coach</button>
-          <button data-sub="log" role="tab">📋 Mes activités</button>
+          <button data-sub="progress" role="tab">📈 Progression</button>
+          <button data-sub="log" role="tab">📋 Activités</button>
         </div>
       </div>
 
       <div id="sub-coach" class="sub">
         <div class="card coach-card">
+          <div class="coach-top"><span>🤖 Ton coach</span><button type="button" id="coachReset" class="link-btn">↺ Recommencer</button></div>
           <div id="coachChat" class="chat" aria-live="polite"></div>
           <div id="coachChips" class="chips"></div>
           <form id="coachForm" class="chat-input">
@@ -157,6 +159,49 @@
         <div class="card hidden" id="coachHistoryCard">
           <h3>Mes dernières séances</h3>
           <div id="coachHistory"></div>
+        </div>
+      </div>
+
+      <div id="sub-progress" class="sub hidden">
+        <div class="card">
+          <h3>État de forme</h3>
+          <div id="prReady"></div>
+        </div>
+        <div class="card">
+          <h3>💪 Renforcement : progression par exercice</h3>
+          <div id="prLifts"></div>
+          <details class="pr-add">
+            <summary>+ Noter une séance faite sans le coach</summary>
+            <form id="prLiftForm" class="form-grid">
+              <label>Exercice <select name="ex" id="prLiftEx" required></select></label>
+              <label>Date <input name="date" type="date" required /></label>
+              <label>Charge (kg) <input name="kg" type="number" min="0" step="0.5" inputmode="decimal" placeholder="0 si sans charge" /></label>
+              <label>Séries <input name="sets" type="number" min="1" max="10" value="3" /></label>
+              <label id="prLiftRepsLbl">Répétitions <input name="reps" type="number" min="1" required /></label>
+              <label>Objectif de rép. <input name="target" placeholder="10-12" /></label>
+              <label>Effort ressenti (/10) <input name="rpe" type="number" min="1" max="10" value="7" /></label>
+              <button class="primary" type="submit">Enregistrer</button>
+            </form>
+          </details>
+        </div>
+        <div class="card">
+          <h3>🏃 Course à pied</h3>
+          <div id="prRunSug"></div>
+          <div id="prRunChart"></div>
+          <details class="pr-add">
+            <summary>+ Noter une sortie</summary>
+            <form id="prRunForm" class="form-grid">
+              <label>Date <input name="date" type="date" required /></label>
+              <label>Distance (km) <input name="km" inputmode="decimal" required placeholder="5,2" /></label>
+              <label>Durée (min ou mm:ss) <input name="min" inputmode="numeric" required placeholder="32:30" /></label>
+              <label>Type
+                <select name="type"><option value="easy">Footing</option><option value="interval">Fractionné</option><option value="long">Sortie longue</option></select>
+              </label>
+              <label>Effort ressenti (/10) <input name="rpe" type="number" min="1" max="10" value="5" /></label>
+              <button class="primary" type="submit">Enregistrer</button>
+            </form>
+          </details>
+          <div id="prRunList"></div>
         </div>
       </div>
 
@@ -318,11 +363,15 @@
         <div class="pl-emoji">🎉</div>
         <h2>Séance terminée !</h2>
         <p id="plEndText"></p>
-        <p>Comment c'était ?</p>
-        <div class="chips">
-          <button data-fb="-1">🥵 Trop dur</button>
-          <button data-fb="0">👌 Parfait</button>
-          <button data-fb="1">😎 Trop facile</button>
+        <label id="plKmWrap" class="pl-km hidden">Distance parcourue (km) <input id="plKm" inputmode="decimal" /></label>
+        <p>Quel effort as-tu ressenti ?</p>
+        <div class="chips rpe-chips">
+          <button data-rpe="3">😌 Très facile<small>3/10</small></button>
+          <button data-rpe="5">🙂 Facile<small>5/10</small></button>
+          <button data-rpe="7">💪 Modéré<small>7/10</small></button>
+          <button data-rpe="8">😤 Dur<small>8/10</small></button>
+          <button data-rpe="9">🥵 Très dur<small>9/10</small></button>
+          <button data-rpe="10">🤯 Maximal<small>10/10</small></button>
         </div>
       </div>
     </div>
@@ -333,6 +382,8 @@
   <script src="labs.js"></script>
   <script src="sport-data.js"></script>
   <script src="coach.js"></script>
+  <script src="progression.js"></script>
+  <script src="progress-ui.js"></script>
   <script src="sport.js"></script>
 </body>
 </html>

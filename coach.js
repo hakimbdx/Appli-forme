@@ -97,7 +97,7 @@
       for (const fb of FALLBACK[pattern] || []) { const e = pick(fb, ctx, used, rand, depth + 1); if (e) return e; }
       return null;
     }
-    const w = list.map(e => (e.lvl === ctx.lvlCap ? 3 : e.lvl === ctx.lvlCap - 1 ? 2 : 1) + (e.eq ? 1 : 0));
+    const w = list.map(e => (e.lvl === ctx.lvlCap ? 3 : e.lvl === ctx.lvlCap - 1 ? 2 : 1) + (e.eq ? (ctx.eqBonus || 1) : 0));
     let r = rand() * w.reduce((a, b) => a + b, 0);
     for (let i = 0; i < list.length; i++) { r -= w[i]; if (r <= 0) return list[i]; }
     return list.at(-1);
@@ -214,6 +214,7 @@
   // ---------- Génération ----------
   function generate(o = {}) {
     const ctx = context(o);
+    ctx.eqBonus = o.goal === 'strength' ? 12 : 1; // en renforcement, on privilégie le matériel disponible
     const seed = o.seed ?? Math.floor(Math.random() * 1e9);
     const rand = rng(seed);
     let duration = clamp(Math.round(o.duration || 30), 10, 90);
@@ -258,8 +259,8 @@
         : `${z} : seulement des exercices qui la sollicitent peu. Réduis l'amplitude si besoin et arrête-toi en cas de douleur.`);
     }
     if (ctx.lowImpact && !o.lowImpact && goal !== 'mobility') warnings.push('Séance sans sauts pour ménager tes articulations.');
-    const mainItems = blocks.filter(b => b.key.startsWith('main')).reduce((a, b) => a + b.items.length, 0);
-    if (mainItems < 3) warnings.push('Peu d\'exercices compatibles avec tes contraintes : une séance de mobilité ou une marche serait peut-être plus adaptée aujourd\'hui.');
+    const pool = D.EXERCISES.filter(e => !['warm', 'stretch'].includes(e.pattern) && eligible(e, ctx)).length;
+    if (pool < 8 && goal !== 'mobility') warnings.push('Peu d\'exercices compatibles avec tes contraintes : une séance de mobilité ou une marche serait peut-être plus adaptée aujourd\'hui.');
 
     const w = {
       seed, duration, goal, focus, fatigue: ctx.fatigue, level: ctx.level, recovery,
@@ -313,11 +314,11 @@
     const steps = [];
     for (const b of w.blocks) {
       if (b.format === 'list') {
-        b.items.forEach(i => steps.push({ block: b.title, kind: 'time', secs: i.time, name: i.name, cue: i.cue, side: i.side }));
+        b.items.forEach(i => steps.push({ id: i.id, fmt: 'list', block: b.title, kind: 'time', secs: i.time, name: i.name, cue: i.cue, side: i.side }));
       } else if (b.format === 'circuit') {
         for (let r = 1; r <= b.rounds; r++) {
           b.items.forEach((i, k) => {
-            steps.push({ block: b.title, kind: 'time', secs: i.time, name: i.name, cue: i.cue, side: i.side, label: `Tour ${r}/${b.rounds}` });
+            steps.push({ id: i.id, fmt: 'circuit', block: b.title, kind: 'time', secs: i.time, name: i.name, cue: i.cue, side: i.side, label: `Tour ${r}/${b.rounds}` });
             const lastOfRound = k === b.items.length - 1;
             if (!lastOfRound && b.rest) steps.push({ block: b.title, kind: 'rest', secs: b.rest, name: 'Pause' });
             if (lastOfRound && r < b.rounds && b.roundRest) steps.push({ block: b.title, kind: 'rest', secs: b.roundRest, name: 'Pause entre les tours' });
@@ -326,9 +327,8 @@
       } else {
         b.items.forEach(i => {
           for (let s = 1; s <= i.sets; s++) {
-            steps.push(i.time
-              ? { block: b.title, kind: 'time', secs: i.time, name: i.name, cue: i.cue, side: i.side, label: `Série ${s}/${i.sets}` }
-              : { block: b.title, kind: 'reps', reps: i.reps, name: i.name, cue: i.cue, side: i.side, label: `Série ${s}/${i.sets}` });
+            const common = { id: i.id, fmt: 'sets', set: s, sets: i.sets, target: i.target || null, block: b.title, name: i.name, cue: i.cue, side: i.side, label: `Série ${s}/${i.sets}` };
+            steps.push(i.time ? { ...common, kind: 'time', secs: i.time } : { ...common, kind: 'reps', reps: i.reps });
             if (s < i.sets || i !== b.items.at(-1)) steps.push({ block: b.title, kind: 'rest', secs: i.rest, name: 'Récupération' });
           }
         });
@@ -414,7 +414,8 @@
     // Objectif et zone travaillée
     if (/(maigrir|perdre du poids|bruler|calories|perte de poids|secher|mincir|hiit|transpirer)/.test(t)) r.goal = 'burn';
     else if (/(muscl|renforc|tonif|force|raffermir|sculpt)/.test(t)) r.goal = 'strength';
-    else if (/(cardio|endurance|souffle|courir)/.test(t)) r.goal = 'cardio';
+    else if (/(courir|course a pied|footing|jogging|running|\bcourse\b|fractionne)/.test(t)) r.goal = 'run';
+    else if (/(cardio|endurance|souffle)/.test(t)) r.goal = 'cardio';
     else if (/(mobilite|souplesse|etire|etirement|yoga|detente|relax|recup|doux|douce|zen)/.test(t)) r.goal = 'mobility';
     if (/(haut du corps|\bbras\b|pecs|pectoraux|triceps|biceps)/.test(t) || dosFocus) r.focus = 'upper';
     else if (/(bas du corps|jambes|fessiers?|fesses|cuisses)/.test(t)) r.focus = 'lower';
@@ -444,5 +445,8 @@
 
   const understood = r => ['fatigue', 'injuries', 'injuriesRemove', 'equipment', 'equipmentAdd', 'equipmentRemove', 'duration', 'goal', 'focus', 'level'].some(k => r[k] !== undefined) || r.intents.length > 0;
 
-  return { generate, swap, findItem, flatten, parse, understood, estimateMinutes, FATIGUE, GOALS, FOCUS, norm };
+  // Un exercice est-il compatible avec ces réglages (matériel, niveau, douleurs, sauts) ?
+  function isEligible(o, id) { const e = D.BY_ID[id]; return !!e && eligible(e, context(o), { lvlCap: 3 }); }
+
+  return { generate, swap, findItem, flatten, parse, understood, estimateMinutes, isEligible, FATIGUE, GOALS, FOCUS, norm };
 });

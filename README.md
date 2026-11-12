@@ -55,6 +55,23 @@ des bilans fictifs (générés par `tools/make-fixtures.cjs`).
 sont testés avec `npm test`. Pour ajouter un exercice : une ligne `ex(...)` dans `sport-data.js`
 (famille, matériel, niveau, sauts, sollicitation des articulations, consigne).
 
+## Surcharge progressive et prévention du surentraînement
+
+`progression.js` (testé avec `npm test`) analyse l'historique :
+
+- **Renforcement** (par exercice) : double progression. Toutes les séries en haut de la fourchette
+  sans effort maximal → charge augmentée (+5 %, arrondie aux haltères ou kettlebells existants) ;
+  échec deux séances de suite → charge réduite ; 3 séances sans progrès → séance allégée.
+  Au poids du corps : variante plus difficile après deux séances au maximum. Gainage : +5 s.
+- **Course** : allure facile (médiane des sorties faciles), tendance à effort égal, volume
+  hebdomadaire +10 % maximum, semaine allégée après 3 semaines de hausse, alternance footing,
+  fractionné et sortie longue.
+- **État de forme** : charge = durée × effort ressenti (RPE), ratio charge aiguë (7 j) / chronique
+  (moyenne 4 semaines), hausses répétées, effort élevé, fatigue déclarée, jours sans repos,
+  monotonie, baisse de performances → 🟢 / 🟡 / 🔴, qui ajuste automatiquement la difficulté du coach.
+
+Les charges et répétitions se notent pendant la séance (lecteur) ou à la main dans l'onglet Progression.
+
 ## Bibliothèques
 
 - [html5-qrcode](https://github.com/mebjas/html5-qrcode) 2.3.8 (Apache-2.0), dans `lib/`, chargée seulement à l'ouverture du scanner.

@@ -131,3 +131,12 @@ test('compréhension des messages', () => {
   assert.ok(C.parse('une autre séance').intents.includes('reroll'));
   assert.equal(C.understood(C.parse('blablabla')), false);
 });
+
+test('course à pied reconnue ; compatibilité d\'un exercice', () => {
+  assert.equal(C.parse('je veux aller courir 30 min').goal, 'run');
+  assert.equal(C.parse('un footing').goal, 'run');
+  assert.equal(C.parse('du cardio').goal, 'cardio');
+  assert.equal(C.isEligible({ equipment: [] }, 'squat_gobelet'), false);
+  assert.equal(C.isEligible({ equipment: ['halteres'] }, 'squat_gobelet'), true);
+  assert.equal(C.isEligible({ equipment: [], injuries: { poignet: 'gene' } }, 'pompes'), false);
+});

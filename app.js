@@ -294,6 +294,7 @@ function renderAll() {
   renderDashboard(); renderWeek(); renderMeals(); renderWeight(); renderActivity(); renderProfile();
   if (typeof renderLabs === 'function') renderLabs();
   if (typeof renderSportHistory === 'function') renderSportHistory();
+  if (typeof renderProgress === 'function') renderProgress();
 }
 
 // ---------- Navigation ----------
