@@ -378,3 +378,21 @@ details.pr-lift .pr-sug { display: block; max-width: none; text-align: left; mar
 .rp-kpis td:first-child { color: var(--muted); }
 .rp-closing { text-align: center; font-weight: 600; margin: 4px 0 16px; }
 .report-actions { margin-bottom: 12px; }
+
+/* ===== Mannequin 3D ===== */
+.player.with-model .pl-main { justify-content: flex-start; gap: 2px; }
+.player.with-model .pl-time { font-size: 3.6rem; letter-spacing: -1px; }
+.player.with-model .pl-reps { font-size: 3rem; }
+.player.with-model .pl-name { font-size: 1.35rem; margin: 2px 0; }
+.player.with-model .pl-cue { min-height: 0; font-size: .9rem; }
+.pl-model { position: relative; width: 100%; flex: 1 1 auto; min-height: 170px; max-height: 40vh; border-radius: 18px; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 30%, #2b2b3d, #17171f 70%); }
+.pl-model canvas { display: block; }
+.pl-model-tag { position: absolute; top: 8px; left: 10px; z-index: 1; background: #7fe0b0; color: #12312a; font-size: .72rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+.pl-model-hint { position: absolute; bottom: 6px; right: 10px; z-index: 1; font-size: .68rem; opacity: .45; pointer-events: none; }
+.pl-eye { margin-left: 2px; }
+.pl-eye.off { opacity: .4; }
+.move-box { max-width: 380px; }
+.mp-model { position: relative; height: 300px; border-radius: 14px; overflow: hidden; background: radial-gradient(ellipse at 50% 30%, #2b2b3d, #17171f 70%); margin: 8px 0; }
+.mp-model .pl-model-hint { color: #fff; }
+.wk-see { display: block; padding: 4px 0; font-size: .8rem; }

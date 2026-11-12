@@ -381,15 +381,26 @@
   </div>
 
 
+  <div id="movePreview" class="modal hidden" role="dialog" aria-label="Aperçu du mouvement">
+    <div class="modal-box move-box">
+      <h3 id="mpName"></h3>
+      <div id="mpModel" class="mp-model"><span class="pl-model-hint">↔ glisse pour tourner</span></div>
+      <p id="mpCue" class="muted hint"></p>
+      <button type="button" id="mpClose">Fermer</button>
+    </div>
+  </div>
+
   <div id="player" class="player hidden" role="dialog" aria-label="Séance en cours">
     <div class="pl-top">
       <button id="plClose" class="pl-x" aria-label="Quitter la séance">✕</button>
       <div class="pl-progress"><span id="plBar"></span></div>
       <span id="plCount" class="pl-count"></span>
+      <button id="plModelToggle" class="pl-x pl-eye" aria-label="Afficher ou masquer le mannequin 3D">🧍</button>
     </div>
     <div class="pl-main">
       <p id="plBlock" class="pl-block"></p>
       <p id="plLabel" class="pl-label"></p>
+      <div id="plModel" class="pl-model hidden"><span id="plModelTag" class="pl-model-tag hidden">À suivre</span><span class="pl-model-hint">↔ glisse pour tourner</span></div>
       <h2 id="plName" class="pl-name"></h2>
       <div id="plBig" class="pl-big"></div>
       <p id="plCue" class="pl-cue"></p>
@@ -430,6 +441,8 @@
   <script src="sync.js"></script>
   <script src="weekly.js"></script>
   <script src="reports.js"></script>
+  <script src="moves.js"></script>
+  <script src="figure3d.js"></script>
   <script src="sport.js"></script>
 </body>
 </html>

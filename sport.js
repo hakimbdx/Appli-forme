@@ -293,7 +293,7 @@
         ${b.note ? `<p class="wk-note">${esc(b.note)}</p>` : ''}
         <ol>${b.items.map((i, ii) => `<li>
           <details><summary><span class="wk-name">${esc(i.name)}</span><span class="wk-dose">${esc(dose(b, i))}${i.target?.kg ? ` · ${String(i.target.kg).replace('.', ',')} kg` : ''}</span></summary>
-            <p class="wk-cue">${esc(i.cue || '')}</p></details>
+            <p class="wk-cue">${esc(i.cue || '')} ${window.Figure3D ? `<button type="button" class="link-btn wk-see" data-see="${esc(i.id)}" data-name="${esc(i.name)}">🧍 Voir le mouvement</button>` : ''}</p></details>
           ${i.progress ? `<small class="wk-prog">${esc(i.progress)}</small>` : ''}
           ${i.target?.text && i.target.action !== 'new' ? `<small class="wk-prog">🎯 ${esc(i.target.text)}</small>` : ''}
           ${D.BY_ID[i.id] ? `<button class="icon wk-swap" data-swap="${bi}:${ii}" title="Remplacer cet exercice" aria-label="Remplacer ${esc(i.name)}">🔄</button>` : ''}
@@ -417,6 +417,43 @@
   }
   const mmss = s => { const t = Math.max(0, Math.ceil(s)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
 
+  // ---------- Mannequin 3D ----------
+  let fig = null, figLoading = null, preview = null;
+  const show3d = () => S().show3d !== false && window.Figure3D?.supported();
+  const propsFor = id => SportProgress.loadKind(id, conv.equipment);
+  async function ensureFig() {
+    if (fig || !show3d()) return fig;
+    figLoading ||= Figure3D.create($('#plModel')).then(f => (fig = f)).catch(() => null);
+    return figLoading;
+  }
+  function updateModel() {
+    const on = show3d();
+    $('#plModel').classList.toggle('hidden', !on);
+    $('#player').classList.toggle('with-model', on);
+    $('#plModelToggle').classList.toggle('off', !on);
+    if (!on || !pl) { fig?.setRunning(false); return; }
+    const st = step();
+    const id = st.kind === 'rest' ? pl.steps.slice(pl.i + 1).find(x => x.kind !== 'rest')?.id : st.id;
+    $('#plModelTag').classList.toggle('hidden', st.kind !== 'rest' || !id);
+    ensureFig().then(f => { if (!f) return; f.setRunning(true); f.show(id || 'idle', { props: id ? propsFor(id) : null }); });
+  }
+  $('#plModelToggle').addEventListener('click', () => {
+    const s = S(); s.show3d = !show3d(); save(); updateModel();
+  });
+  // Aperçu d'un exercice depuis la carte de séance
+  chat.addEventListener('click', async e => {
+    const b = e.target.closest('[data-see]');
+    if (!b || !window.Figure3D?.supported()) return;
+    e.preventDefault();
+    $('#mpName').textContent = b.dataset.name;
+    $('#mpCue').textContent = D.BY_ID[b.dataset.see]?.cue || '';
+    $('#movePreview').classList.remove('hidden');
+    preview ||= await Figure3D.create($('#mpModel')).catch(() => null);
+    preview?.setRunning(true);
+    preview?.show(b.dataset.see, { props: propsFor(b.dataset.see) });
+  });
+  $('#mpClose').addEventListener('click', () => { $('#movePreview').classList.add('hidden'); preview?.setRunning(false); });
+
   async function startPlayer() {
     if (!workout) return;
     const steps = C.flatten(workout);
@@ -438,6 +475,7 @@
     $('#plBlock').textContent = st.block;
     $('#plLabel').textContent = st.label || '';
     $('#plName').textContent = st.name;
+    updateModel();
     $('#player').classList.toggle('resting', st.kind === 'rest');
     $('#plCue').textContent = st.kind === 'rest' ? '' : (st.cue || '') + (st.side ? (st.kind === 'time' ? ' Change de côté à mi-temps.' : ' De chaque côté.') : '');
     $('#plNext').textContent = st.next ? `Ensuite : ${st.next}` : 'Dernier exercice !';
@@ -511,6 +549,7 @@
     wake = null;
   }
   function closePlayer() {
+    fig?.setRunning(false);
     $('#player').classList.add('hidden');
     document.body.classList.remove('no-scroll');
   }

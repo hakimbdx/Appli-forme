@@ -47,7 +47,7 @@
   ex('moulinets', 'Moulinets de bras', 'warm', '', 1, 0, { epaule: 1 }, T, 'Grands cercles lents, vers l\'avant puis l\'arrière.');
   ex('cercles_hanches', 'Cercles de hanches', 'warm', '', 1, 0, {}, T, 'Mains sur les hanches, grands cercles dans les deux sens.');
   ex('chat_vache', 'Chat-vache', 'warm', '', 1, 0, { poignet: 1 }, T, 'À 4 pattes, enroule puis creuse le dos en suivant ta respiration.');
-  ex('rotation_thoracique', 'Rotations du buste à 4 pattes', 'warm', '', 1, 0, { poignet: 1 }, TS, 'Main derrière la tête, ouvre le coude vers le plafond.');
+  ex('rotation_thoracique', 'Rotations du buste à 4 pattes', 'warm', '', 1, 0, { poignet: 1 }, TS, 'Passe le bras sous ton corps, puis ouvre-le vers le plafond en suivant ta main du regard.');
   ex('fente_rotation', 'Fente avec rotation du buste', 'warm', '', 2, 0, { genou: 1, hanche: 1 }, TS, 'Grande fente, coude vers le sol puis bras vers le ciel.');
   ex('good_morning_pdc', 'Good morning au poids du corps', 'warm', '', 1, 0, { dos: 1 }, T, 'Mains derrière la tête, bascule le buste dos plat, genoux souples.');
   ex('cercles_articulations', 'Cercles de chevilles et poignets', 'warm', '', 1, 0, {}, T, 'Petits cercles dans les deux sens.');

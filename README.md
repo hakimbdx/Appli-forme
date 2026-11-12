@@ -14,6 +14,7 @@ Application web de **suivi santé et régime**, en français, sans dépendances 
 - **Produits du commerce** : recherche et scan de code-barres via [Open Food Facts](https://fr.openfoodfacts.org) (gratuit, sans compte) ; les produits utilisés sont mémorisés.
 - **Bilan sur 7 jours** : calories par jour comparées à l'objectif.
 - **Données** : stockées localement dans le navigateur, export / import JSON.
+- **Mannequin 3D** : pendant la séance, un mannequin animé (Three.js) montre le mouvement de l'exercice en cours (et l'exercice suivant pendant les pauses), avec haltères ou kettlebell si besoin ; on peut le faire tourner au doigt. Aussi accessible depuis la carte de séance (« Voir le mouvement »).
 - **Bilans hebdomadaires** : chaque dimanche soir (à la première ouverture de l'appli à partir de 18 h), un récapitulatif rédigé sur un ton encourageant : victoires de la semaine (poids, records, régularité, séances, allure…), un seul axe d'amélioration ciblé avec un conseil concret et un défi mesurable, suivi en direct sur l'écran d'accueil et vérifié dans le bilan suivant. Partage ou copie du texte.
 - **Synchro Forme** (bouton ❤️ en haut de l'écran) : import des calories actives, minutes d'exercice, pas, pesée et course du jour (distance, durée) depuis Apple Santé via un raccourci iOS « Synchro Forme ». La course alimente le suivi des allures sans être comptée deux fois. Instructions et historique des synchronisations dans la rubrique.
 - **Analyses de sang** : import du PDF d'un bilan de laboratoire, lecture automatique d'environ 35 biomarqueurs (glycémie, HbA1c, cholestérol, fer, vitamines, thyroïde, foie, rein, NFS…), vérification avant enregistrement, synthèse des valeurs hors normes et graphiques d'évolution. Le PDF est lu sur le téléphone, rien n'est envoyé.
@@ -82,9 +83,17 @@ Les victoires sont classées par importance (4 au maximum) ; l'axe d'améliorati
 plus d'impact (régularité du suivi, sous-alimentation, récupération, dépassements, activité,
 protéines, hydratation, marche), avec un défi chiffré. `reports.js` génère et conserve les bilans.
 
+## Mannequin 3D
+
+`moves.js` (testé avec `npm test`) décrit chaque mouvement par des postures clés (angles des
+articulations) interpolées en boucle ; `figure3d.js` construit le mannequin articulé avec Three.js,
+garde le corps au contact du sol et cadre la caméra. Pour vérifier visuellement les mouvements :
+ouvrir `tools/moves-preview.html` via un serveur local et appeler `fig.renderAt('squat', 1.2)`.
+
 ## Bibliothèques
 
 - [html5-qrcode](https://github.com/mebjas/html5-qrcode) 2.3.8 (Apache-2.0), dans `lib/`, chargée seulement à l'ouverture du scanner.
+- [Three.js](https://threejs.org) r170 (MIT), dans `lib/three/`, chargé seulement à l'affichage du mannequin.
 - [pdf.js](https://github.com/mozilla/pdf.js) 4.10.38, version « legacy » (Apache-2.0), dans `lib/pdfjs/`, chargée seulement à l'import d'un bilan.
 
 > Les estimations sont indicatives et ne remplacent pas l'avis d'un professionnel de santé.

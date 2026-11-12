@@ -140,3 +140,26 @@ test('course à pied reconnue ; compatibilité d\'un exercice', () => {
   assert.equal(C.isEligible({ equipment: ['halteres'] }, 'squat_gobelet'), true);
   assert.equal(C.isEligible({ equipment: [], injuries: { poignet: 'gene' } }, 'pompes'), false);
 });
+
+test('chaque exercice a un mouvement 3D et les postures sont valides', () => {
+  const M = require('../moves.js');
+  for (const e of D.EXERCISES) assert.ok(M.MOVES[M.moveFor(e.id)], `${e.id} → ${M.moveFor(e.id)} inexistant`);
+  for (const id of ['velo_fast', 'rameur_slow', 'tapis_course_fast', 'run_main', 'run_walk']) assert.notEqual(M.moveFor(id), 'idle', id);
+  for (const name of Object.keys(M.MOVES)) {
+    for (const t of [0, 0.4, 1.1, 2.7, 5.3]) {
+      const p = M.poseAt(name, t);
+      for (const [k, v] of Object.entries(p)) {
+        if (k === 'flat') continue;
+        for (const x of [].concat(v)) assert.ok(Number.isFinite(x), `${name} ${k} à ${t}s`);
+      }
+    }
+  }
+  // côté alterné : le cycle suivant est le miroir
+  const a = M.poseAt('lunge', 0.6), b = M.poseAt('lunge', 0.6 + M.MOVES.lunge.dur);
+  a.hpL.forEach((v, i) => assert.ok(Math.abs(v - b.hpR[i]) < 1e-6));
+});
+
+test('mouvement 3D : temps négatif ou invalide sans erreur', () => {
+  const M = require('../moves.js');
+  for (const name of Object.keys(M.MOVES)) for (const t of [-0.004, NaN, undefined]) assert.ok(M.poseAt(name, t));
+});
