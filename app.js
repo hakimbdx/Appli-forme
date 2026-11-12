@@ -8,6 +8,7 @@ const defaultState = () => ({
   weights: [],   // [{date, kg}]
   activities: {}, // { 'YYYY-MM-DD': [{id, name, minutes, kcal}] }
   customFoods: [], // produits mémorisés : [nom, kcal, prot, gluc, lip] pour 100 g
+  sport: null, // coach : { level, equipment, injuries, adj, history }
   labs: [] // bilans sanguins : [{id, date, lab, results: [{key, value, comparator, refLow, refHigh, refSource}]}]
 });
 
@@ -292,6 +293,7 @@ function renderProfile() {
 function renderAll() {
   renderDashboard(); renderWeek(); renderMeals(); renderWeight(); renderActivity(); renderProfile();
   if (typeof renderLabs === 'function') renderLabs();
+  if (typeof renderSportHistory === 'function') renderSportHistory();
 }
 
 // ---------- Navigation ----------

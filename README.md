@@ -7,7 +7,7 @@ Application web de **suivi santé et régime**, en français, sans dépendances 
 - **Tableau de bord** : calories du jour (anneau de progression), eau, poids actuel, IMC, macronutriments.
 - **Repas** : journal par jour (petit-déjeuner, déjeuner, dîner, collation) avec calories et macros.
 - **Poids** : pesées, historique et courbe d'évolution avec ligne d'objectif.
-- **Activité** : séances sportives et calories brûlées (ajoutées au budget du jour).
+- **Sport** : un coach conversationnel génère des séances sur mesure selon la forme du jour, le matériel disponible et les douleurs ou gênes signalées (94 exercices décrits par matériel, niveau, sauts et sollicitation de chaque articulation). On peut les modifier en langage naturel (« plus facile », « sans sauts », « remplace les squats »), les suivre avec un minuteur guidé, et le ressenti en fin de séance ajuste les suivantes. Les séances et activités sont ajoutées au budget calorique du jour.
 - **Profil** : calcul du métabolisme de base (Mifflin-St Jeor), de la dépense journalière et d'un objectif calorique selon le but (perte, maintien, prise).
 - **Types de régime** : équilibré, riche en protéines, pauvre en glucides, méditerranéen (répartition des macros et conseils adaptés).
 - **Base d'aliments** : ~50 aliments courants, calories et macros calculées selon la quantité.
@@ -48,6 +48,12 @@ les « lignes non reconnues », compléter `BIOMARKERS` dans `bloodparser.js` et
 `tests/bloodparser.test.cjs`. Les vrais bilans se rangent dans `bilans-prives/` (ignoré par git) :
 **ne jamais committer de vrais résultats**, le dépôt est public. `tests/fixtures/` ne contient que
 des bilans fictifs (générés par `tools/make-fixtures.cjs`).
+
+## Coach sportif
+
+`sport-data.js` (base d'exercices) et `coach.js` (génération des séances, compréhension des messages)
+sont testés avec `npm test`. Pour ajouter un exercice : une ligne `ex(...)` dans `sport-data.js`
+(famille, matériel, niveau, sauts, sollicitation des articulations, consigne).
 
 ## Bibliothèques
 

@@ -21,7 +21,7 @@
       <button data-tab="dashboard" class="active"><span class="ico">🏠</span><span>Aujourd'hui</span></button>
       <button data-tab="meals"><span class="ico">🍽️</span><span>Repas</span></button>
       <button data-tab="weight"><span class="ico">⚖️</span><span>Poids</span></button>
-      <button data-tab="activity"><span class="ico">🏃‍♀️</span><span>Activité</span></button>
+      <button data-tab="activity"><span class="ico">🏋️‍♀️</span><span>Sport</span></button>
       <button data-tab="labs"><span class="ico">🧪</span><span>Analyses</span></button>
       <button data-tab="profile"><span class="ico">👤</span><span>Profil</span></button>
     </nav>
@@ -134,6 +134,33 @@
 
     <!-- Activité -->
     <section id="activity" class="tab">
+      <div class="sport-hero">
+        <div>
+          <h2>Espace sport</h2>
+          <p>Ton coach crée une séance adaptée à ton énergie du jour, à ton matériel et à tes douleurs.</p>
+        </div>
+        <div class="subnav" role="tablist">
+          <button data-sub="coach" class="active" role="tab">🤖 Coach</button>
+          <button data-sub="log" role="tab">📋 Mes activités</button>
+        </div>
+      </div>
+
+      <div id="sub-coach" class="sub">
+        <div class="card coach-card">
+          <div id="coachChat" class="chat" aria-live="polite"></div>
+          <div id="coachChips" class="chips"></div>
+          <form id="coachForm" class="chat-input">
+            <input id="coachInput" autocomplete="off" enterkeyhint="send" placeholder="Écris au coach… ex : fatiguée, mal au genou, 20 min" />
+            <button class="primary" type="submit" aria-label="Envoyer">➤</button>
+          </form>
+        </div>
+        <div class="card hidden" id="coachHistoryCard">
+          <h3>Mes dernières séances</h3>
+          <div id="coachHistory"></div>
+        </div>
+      </div>
+
+      <div id="sub-log" class="sub hidden">
       <div class="card">
         <h3>❤️ Apple Forme / Santé</h3>
         <p class="muted hint" style="margin-top:0">Importez les calories actives, les minutes d'exercice, les pas et la pesée du jour enregistrés par votre iPhone ou votre Apple Watch.</p>
@@ -175,9 +202,9 @@
         <h3>Activités du <span id="activityDate"></span></h3>
         <div id="activityList"></div>
       </div>
+      </div>
     </section>
 
-    <!-- Profil -->
     <!-- Analyses de sang -->
     <section id="labs" class="tab">
       <div class="card" id="labDrop">
@@ -199,6 +226,7 @@
       <p class="muted hint disclaimer">⚠️ Ces informations sont indicatives et ne remplacent pas l'interprétation de votre médecin, qui tient compte de votre situation. Les valeurs de référence sont celles de votre laboratoire quand elles sont lues dans le PDF, sinon des valeurs usuelles pour un adulte.</p>
     </section>
 
+    <!-- Profil -->
     <section id="profile" class="tab">
       <div class="card">
         <h3>Mon profil</h3>
@@ -265,9 +293,46 @@
     </div>
   </div>
 
+
+  <div id="player" class="player hidden" role="dialog" aria-label="Séance en cours">
+    <div class="pl-top">
+      <button id="plClose" class="pl-x" aria-label="Quitter la séance">✕</button>
+      <div class="pl-progress"><span id="plBar"></span></div>
+      <span id="plCount" class="pl-count"></span>
+    </div>
+    <div class="pl-main">
+      <p id="plBlock" class="pl-block"></p>
+      <p id="plLabel" class="pl-label"></p>
+      <h2 id="plName" class="pl-name"></h2>
+      <div id="plBig" class="pl-big"></div>
+      <p id="plCue" class="pl-cue"></p>
+      <p id="plNext" class="pl-next"></p>
+    </div>
+    <div class="pl-controls">
+      <button id="plPrev" aria-label="Précédent">⏮</button>
+      <button id="plPlay" class="pl-play" aria-label="Pause">⏸</button>
+      <button id="plNextBtn" aria-label="Suivant">⏭</button>
+    </div>
+    <div id="plEnd" class="pl-end hidden">
+      <div class="pl-end-box">
+        <div class="pl-emoji">🎉</div>
+        <h2>Séance terminée !</h2>
+        <p id="plEndText"></p>
+        <p>Comment c'était ?</p>
+        <div class="chips">
+          <button data-fb="-1">🥵 Trop dur</button>
+          <button data-fb="0">👌 Parfait</button>
+          <button data-fb="1">😎 Trop facile</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="foods.js"></script>
   <script src="app.js"></script>
   <script src="bloodparser.js"></script>
   <script src="labs.js"></script>
+  <script src="sport-data.js"></script>
+  <script src="coach.js"></script>
+  <script src="sport.js"></script>
 </body>
 </html>
