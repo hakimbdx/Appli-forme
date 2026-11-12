@@ -1,7 +1,8 @@
 // Service worker : fonctionnement hors ligne (réseau d'abord, cache en secours)
-const CACHE = 'appli-forme-v4';
+const CACHE = 'appli-forme-v5';
 const ASSETS = ['./', 'index.html', 'styles.css', 'app.js', 'foods.js', 'manifest.webmanifest',
-  'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'lib/html5-qrcode.min.js'];
+  'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'lib/html5-qrcode.min.js',
+  'bloodparser.js', 'labs.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

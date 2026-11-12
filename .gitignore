@@ -1,0 +1,4 @@
+# Vrais bilans sanguins : ne JAMAIS les committer (le dépôt est public)
+bilans-prives/
+*.prive.pdf
+node_modules/

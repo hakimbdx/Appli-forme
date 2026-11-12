@@ -7,7 +7,8 @@ const defaultState = () => ({
   water: {},     // { 'YYYY-MM-DD': n }
   weights: [],   // [{date, kg}]
   activities: {}, // { 'YYYY-MM-DD': [{id, name, minutes, kcal}] }
-  customFoods: [] // produits mémorisés : [nom, kcal, prot, gluc, lip] pour 100 g
+  customFoods: [], // produits mémorisés : [nom, kcal, prot, gluc, lip] pour 100 g
+  labs: [] // bilans sanguins : [{id, date, lab, results: [{key, value, comparator, refLow, refHigh, refSource}]}]
 });
 
 let state = load();
@@ -290,6 +291,7 @@ function renderProfile() {
 
 function renderAll() {
   renderDashboard(); renderWeek(); renderMeals(); renderWeight(); renderActivity(); renderProfile();
+  if (typeof renderLabs === 'function') renderLabs();
 }
 
 // ---------- Navigation ----------

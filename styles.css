@@ -137,3 +137,62 @@ summary { cursor: pointer; color: var(--primary); font-size: .9rem; }
 .steps li { margin-bottom: 8px; }
 code { background: var(--primary-soft); padding: 2px 6px; border-radius: 6px; font-size: .8rem; word-break: break-all; }
 textarea { width: 100%; font: inherit; font-size: 16px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); margin: 8px 0; }
+
+/* Analyses de sang */
+:root { --ok: #2e9b5f; --low: #3b7dd8; --high: #d64545; --band: rgba(46, 155, 95, .13); }
+.primary-btn { background: var(--primary); border-color: var(--primary); color: #fff; }
+#labDrop.dragging { outline: 2px dashed var(--primary); }
+.badge { display: inline-block; font-size: .72rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.st-ok { background: color-mix(in srgb, var(--ok) 15%, transparent); color: var(--ok); }
+.st-low { background: color-mix(in srgb, var(--low) 15%, transparent); color: var(--low); }
+.st-high { background: color-mix(in srgb, var(--high) 15%, transparent); color: var(--high); }
+.st-na { background: var(--border); color: var(--muted); }
+.dot-normal { fill: var(--ok); } .dot-low { fill: var(--low); } .dot-high { fill: var(--high); } .dot-unknown { fill: var(--muted); }
+.warn-text { color: var(--accent); }
+.disclaimer { padding: 0 4px 8px; line-height: 1.45; }
+
+.rv-list { margin: 12px 0; }
+.rv-row { display: grid; grid-template-columns: auto 1fr auto auto; grid-template-areas: "chk name val badge"; gap: 6px 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.rv-row > input[type=checkbox] { grid-area: chk; } .rv-name { grid-area: name; } .rv-val { grid-area: val; } .rv-row > .badge { grid-area: badge; }
+@media (max-width: 640px) {
+  .rv-row { grid-template-columns: auto 1fr auto; grid-template-areas: "chk name name" "chk val badge"; align-items: start; }
+  .rv-row > input[type=checkbox] { margin-top: 2px; }
+  .rv-row > .badge { align-self: center; }
+}
+.rv-row.off { opacity: .45; }
+.rv-row input[type=checkbox] { width: 20px; height: 20px; }
+.rv-name { font-size: .92rem; min-width: 0; }
+.rv-name small { display: block; color: var(--muted); font-size: .75rem; }
+.rv-name small.raw { font-family: ui-monospace, Menlo, monospace; font-size: .68rem; overflow-wrap: anywhere; }
+.rv-name small.warn-text { color: var(--accent); }
+.rv-val { display: flex; align-items: center; gap: 4px; }
+.rv-val input { width: 82px; padding: 6px 8px; text-align: right; }
+.rv-val span { font-size: .75rem; color: var(--muted); min-width: 34px; }
+.rv-add { display: flex; gap: 8px; flex-wrap: wrap; }
+.rv-add select { flex: 1 1 200px; min-width: 0; }
+.rv-add input { width: 100px; }
+.raw-list { font-family: ui-monospace, Menlo, monospace; font-size: .75rem; padding-left: 18px; color: var(--muted); }
+.raw-text { font-size: .7rem; max-height: 240px; overflow: auto; background: var(--bg); padding: 8px; border-radius: 8px; white-space: pre-wrap; }
+
+.sum-list { padding-left: 18px; margin: 6px 0 10px; line-height: 1.9; }
+.sum-list a { color: var(--text); font-weight: 600; }
+.tip { background: var(--primary-soft); border-radius: 10px; padding: 10px 12px; font-size: .88rem; line-height: 1.45; margin: 8px 0; }
+
+details.marker { border-bottom: 1px solid var(--border); margin: 0; }
+details.marker:last-child { border-bottom: none; }
+details.marker > summary { display: grid; grid-template-columns: 1fr auto auto auto; gap: 10px; align-items: center; padding: 10px 0; color: var(--text); list-style: none; }
+details.marker > summary::-webkit-details-marker { display: none; }
+.mk-name { font-weight: 600; font-size: .92rem; min-width: 0; }
+.mk-name small { display: block; font-weight: 400; color: var(--muted); font-size: .75rem; }
+.mk-val { font-weight: 700; white-space: nowrap; }
+.mk-val small { font-weight: 400; color: var(--muted); font-size: .72rem; }
+.spark { width: 80px; height: 26px; }
+.mk-body { padding-bottom: 12px; }
+.lab-chart { width: 100%; height: auto; }
+.lab-chart text { fill: var(--muted); font-size: 10px; }
+.lab-chart .pt-label { fill: var(--text); font-weight: 600; }
+.lab-chart .band { fill: var(--band); }
+.mk-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+.mk-table th { text-align: left; color: var(--muted); font-weight: 500; font-size: .75rem; }
+.mk-table td, .mk-table th { padding: 5px 4px; border-bottom: 1px solid var(--border); }
+@media (max-width: 400px) { .spark { display: none; } details.marker > summary { grid-template-columns: 1fr auto auto; } }

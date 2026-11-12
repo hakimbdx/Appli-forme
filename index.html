@@ -22,6 +22,7 @@
       <button data-tab="meals"><span class="ico">🍽️</span><span>Repas</span></button>
       <button data-tab="weight"><span class="ico">⚖️</span><span>Poids</span></button>
       <button data-tab="activity"><span class="ico">🏃‍♀️</span><span>Activité</span></button>
+      <button data-tab="labs"><span class="ico">🧪</span><span>Analyses</span></button>
       <button data-tab="profile"><span class="ico">👤</span><span>Profil</span></button>
     </nav>
   </header>
@@ -177,6 +178,27 @@
     </section>
 
     <!-- Profil -->
+    <!-- Analyses de sang -->
+    <section id="labs" class="tab">
+      <div class="card" id="labDrop">
+        <h3>🧪 Mes analyses de sang</h3>
+        <p class="muted hint" style="margin-top:0">Importez le PDF de vos résultats de laboratoire : l'application repère les biomarqueurs, les compare aux valeurs de référence et suit leur évolution. 🔒 Le fichier est lu sur votre téléphone : rien n'est envoyé sur internet.</p>
+        <div class="row sync-row">
+          <label class="file-btn primary-btn">📄 Importer un PDF <input type="file" id="labFile" accept="application/pdf,.pdf" hidden /></label>
+          <button id="labManual">✍️ Saisir à la main</button>
+        </div>
+        <p id="labStatus" class="muted hint"></p>
+      </div>
+      <div id="labReview" class="card hidden"></div>
+      <div id="labSummary"></div>
+      <div id="labMarkers"></div>
+      <div class="card hidden" id="labHistoryCard">
+        <h3>Bilans enregistrés</h3>
+        <div id="labHistory"></div>
+      </div>
+      <p class="muted hint disclaimer">⚠️ Ces informations sont indicatives et ne remplacent pas l'interprétation de votre médecin, qui tient compte de votre situation. Les valeurs de référence sont celles de votre laboratoire quand elles sont lues dans le PDF, sinon des valeurs usuelles pour un adulte.</p>
+    </section>
+
     <section id="profile" class="tab">
       <div class="card">
         <h3>Mon profil</h3>
@@ -245,5 +267,7 @@
 
   <script src="foods.js"></script>
   <script src="app.js"></script>
+  <script src="bloodparser.js"></script>
+  <script src="labs.js"></script>
 </body>
 </html>

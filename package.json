@@ -1,0 +1,10 @@
+{
+  "name": "appli-forme",
+  "private": true,
+  "description": "Suivi santé et régime (application web sans dépendances)",
+  "scripts": {
+    "test": "node --test \"tests/*.test.*\"",
+    "parse": "node tools/parse-bilan.mjs",
+    "fixtures": "node tools/make-fixtures.cjs"
+  }
+}
