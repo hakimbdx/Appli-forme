@@ -39,51 +39,58 @@
         <button id="nextDay" aria-label="Jour suivant">›</button>
       </div>
       <div id="reportBanner" class="report-banner hidden"></div>
-      <div id="challengeCard" class="card challenge-card hidden"></div>
       <div id="profileWarning" class="card warning hidden">
         Complétez votre <a href="#" data-goto="profile">profil</a> pour calculer vos objectifs personnalisés.
       </div>
-      <div class="grid">
-        <div class="card stat">
-          <h3>Calories</h3>
-          <div class="ring" id="calRing"></div>
-          <p id="calText"></p>
+      <div class="dash-toolbar">
+        <button type="button" id="dashEdit" class="link-btn">✏️ Personnaliser</button>
+      </div>
+      <div id="dashBar" class="dash-bar hidden">
+        <p><strong>Organise ton tableau de bord</strong><br><small>Fais glisser les blocs avec ⠿ (ou ↑ ↓), touche 👁 pour masquer ou réafficher.</small></p>
+        <div class="dash-presets" id="dashPresets"></div>
+        <button type="button" id="dashDone" class="primary">✓ Terminé</button>
+      </div>
+
+      <button type="button" id="dashDoneFloat" class="primary dash-done-float">✓ Terminé</button>
+      <div id="widgets" class="widgets">
+        <div class="widget card" data-w="defi">
+          <div id="challengeCard" class="challenge-card hidden"></div>
         </div>
-        <div class="card stat">
-          <h3>Eau</h3>
+        <div class="widget card" data-w="nutrition">
+          <div class="nut">
+            <div class="nut-ring"><div class="ring" id="calRing"></div><p id="calText"></p></div>
+            <div class="nut-macros" id="macros"></div>
+          </div>
+          <p id="dietTip" class="muted hint"></p>
+        </div>
+        <div class="widget card stat" data-w="hydratation" data-size="half">
           <div class="big" id="waterText">0 / 8</div>
           <div class="water-glasses" id="waterGlasses"></div>
           <div class="row">
-            <button id="waterMinus">− verre</button>
+            <button id="waterMinus" aria-label="Retirer un verre">−</button>
             <button id="waterPlus" class="primary">+ verre</button>
           </div>
         </div>
-        <div class="card stat">
-          <h3>Poids actuel</h3>
+        <div class="widget card stat" data-w="poids" data-size="half">
           <div class="big" id="weightNow">—</div>
           <p id="weightDelta"></p>
+          <p class="bmi-line">IMC <strong id="bmiValue">—</strong> <span id="bmiLabel"></span></p>
         </div>
-        <div class="card stat">
-          <h3>IMC</h3>
-          <div class="big" id="bmiValue">—</div>
-          <p id="bmiLabel"></p>
+        <div class="widget card" data-w="entrainement">
+          <div id="wTraining"></div>
         </div>
-      </div>
-      <div class="card">
-        <h3>Macronutriments du jour</h3>
-        <div id="macros"></div>
-        <p id="dietTip" class="muted hint"></p>
-      </div>
-      <div class="card">
-        <h3>Mes 7 derniers jours</h3>
-        <div id="weekChart" class="chart"></div>
-        <p id="weekSummary" class="muted hint"></p>
-      </div>
-      <div class="card">
-        <h3>📊 Mes bilans hebdomadaires</h3>
-        <p class="muted hint" style="margin-top:0">Chaque dimanche soir, un bilan de ta semaine : tes victoires et un axe d'amélioration avec un défi.</p>
-        <div id="reportList"></div>
-        <button type="button" id="reportPreview" class="link-btn">👀 Aperçu de la semaine en cours</button>
+        <div class="widget card" data-w="sommeil">
+          <div id="wSleep"></div>
+        </div>
+        <div class="widget card" data-w="semaine">
+          <div id="weekChart" class="chart"></div>
+          <p id="weekSummary" class="muted hint"></p>
+        </div>
+        <div class="widget card" data-w="bilans">
+          <p class="muted hint" style="margin-top:0">Chaque dimanche soir, un bilan de ta semaine : tes victoires et un axe d'amélioration avec un défi.</p>
+          <div id="reportList"></div>
+          <button type="button" id="reportPreview" class="link-btn">👀 Aperçu de la semaine en cours</button>
+        </div>
       </div>
     </section>
 
@@ -273,7 +280,7 @@
     <section id="sync" class="tab">
       <div class="sync-hero">
         <h2>❤️ Synchro Forme</h2>
-        <p>Récupère les données de ton iPhone et de ton Apple Watch : calories actives, minutes d'exercice, pas, pesée et course du jour.</p>
+        <p>Récupère les données de ton iPhone et de ton Apple Watch : calories actives, minutes d'exercice, pas, pesée, course et sommeil.</p>
         <div class="sync-actions">
           <button id="syncRun" type="button">🔄 1. Récupérer</button>
           <button id="syncImport" type="button">📋 2. Importer</button>
@@ -297,8 +304,10 @@
           <li>Même action pour <em>Minutes d'exercice</em> (variable <strong>Exercice</strong>) et pour <em>Nombre de pas</em> (variable <strong>Pas</strong>), avec les mêmes réglages.</li>
           <li>Même action pour <em>Poids</em> : <em>Date de début est aujourd'hui</em>, trier <em>Plus récent en premier</em>, limite <em>1</em> (variable <strong>Poids</strong>).</li>
           <li><em>Facultatif, pour la course :</em> ajoute une recherche d'<strong>entraînements</strong> (type <em>Entraînements</em> dans la même action, ou action <em>Rechercher des entraînements</em> selon la version d'iOS) : <em>Date de début est aujourd'hui</em>, type <em>Course</em>, plus récent en premier, limite <em>1</em> (variable <strong>Course</strong>).</li>
+          <li><em>Facultatif, pour le sommeil :</em> même action avec le type <em>Analyse du sommeil</em> (date de fin <em>aujourd'hui</em>), puis <strong>Calculer les statistiques</strong> → <em>Somme</em> de la durée (variable <strong>Sommeil</strong>). Les étapes du sommeil se cumulent : vérifie la valeur affichée dans la rubrique après le premier import.</li>
           <li>Ajoute une action <strong>Texte</strong> contenant :<br><code>FORME;kcal=[Calories];min=[Exercice];pas=[Pas];poids=[Poids]</code><br>
             et, si tu as fait l'étape 5 : <code>;course=[Course › Distance];duree=[Course › Durée]</code><br>
+            et, si tu as fait l'étape 6 : <code>;sommeil=[Sommeil]</code><br>
             (insère chaque variable à la place des crochets ; pour la course, touche la variable et choisis la propriété Distance ou Durée).</li>
           <li>Ajoute <strong>Copier dans le presse-papiers</strong>, puis enregistre.</li>
           <li>Au premier lancement, autorise l'accès à <strong>Santé</strong>.</li>
@@ -441,6 +450,7 @@
   <script src="sync.js"></script>
   <script src="weekly.js"></script>
   <script src="reports.js"></script>
+  <script src="dashboard.js"></script>
   <script src="moves.js"></script>
   <script src="figure3d.js"></script>
   <script src="sport.js"></script>

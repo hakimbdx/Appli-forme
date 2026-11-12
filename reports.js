@@ -129,7 +129,7 @@
       const ev = W.evalChallenge(ch, st);
       const pct = Math.min(100, Math.round((ev?.value || 0) / ch.target * 100));
       $('#challengeCard').classList.remove('hidden');
-      $('#challengeCard').innerHTML = `<div class="ch-top"><span>🎯 Défi de la semaine</span><strong>${ev?.done ? '✅ Réussi !' : `${ch.type === 'steps_avg' ? Math.round(ev?.value || 0).toLocaleString('fr-FR') : ev?.value ?? 0} / ${ch.type === 'steps_avg' ? ch.target.toLocaleString('fr-FR') : ch.target}`}</strong></div>
+      $('#challengeCard').innerHTML = `<div class="ch-top"><span>Progression</span><strong>${ev?.done ? '✅ Réussi !' : `${ch.type === 'steps_avg' ? Math.round(ev?.value || 0).toLocaleString('fr-FR') : ev?.value ?? 0} / ${ch.type === 'steps_avg' ? ch.target.toLocaleString('fr-FR') : ch.target}`}</strong></div>
         <p>${esc(ch.label.charAt(0).toUpperCase() + ch.label.slice(1))}</p>
         <div class="bar"><span style="width:${pct}%;background:${ev?.done ? 'var(--primary)' : 'var(--sport)'}"></span></div>`;
     } else $('#challengeCard').classList.add('hidden');

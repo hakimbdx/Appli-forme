@@ -10,6 +10,8 @@ const defaultState = () => ({
   customFoods: [], // produits mémorisés : [nom, kcal, prot, gluc, lip] pour 100 g
   sport: null, // coach : { level, equipment, injuries, adj, history }
   reports: [], // bilans hebdomadaires
+  sleep: {}, // sommeil : { 'YYYY-MM-DD' (matin) : { h, q, src } }
+  dashboard: null, // tableau de bord : { order, hidden }
   labs: [] // bilans sanguins : [{id, date, lab, results: [{key, value, comparator, refLow, refHigh, refSource}]}]
 });
 
@@ -298,6 +300,7 @@ function renderAll() {
   if (typeof renderProgress === 'function') renderProgress();
   if (typeof renderSync === 'function') renderSync();
   if (typeof renderReports === 'function') renderReports();
+  if (typeof renderWidgets === 'function') renderWidgets();
 }
 
 // ---------- Navigation ----------

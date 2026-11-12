@@ -1,6 +1,6 @@
 /*
  * Lecture du texte copié par le raccourci iOS « Synchro Forme ».
- * Format : FORME;kcal=…;min=…;pas=…;poids=…[;course=…;duree=…]
+ * Format : FORME;kcal=…;min=…;pas=…;poids=…[;course=…;duree=…][;sommeil=…]
  * Les valeurs peuvent contenir des unités et des séparateurs français (« 1 234,5 kcal »).
  * Fichier partagé entre l'application et les tests (Node).
  */
@@ -52,8 +52,19 @@
     if (!/FORME/i.test(txt || '')) return null;
     const km = distanceKm(raw(txt, 'course'));
     const runMin = durationMin(raw(txt, 'duree') ?? raw(txt, 'durée'));
+    // Sommeil : durée de la nuit (« 7 h 12 min », « 7:12 », « 432 min »…) ; un nombre seul ≤ 16 = heures
+    const sRaw = raw(txt, 'sommeil');
+    let sleepH = null;
+    if (sRaw) {
+      const n = number(sRaw);
+      const hm = sRaw.trim().match(/^(\d{1,2}):(\d{2})$/); // « 7:30 » = heures:minutes pour une nuit
+      sleepH = hm ? Number(hm[1]) + Number(hm[2]) / 60
+        : /^[\d\s.,]+$/.test(sRaw.trim()) && n != null && n <= 16 ? n : (durationMin(sRaw) ?? 0) / 60;
+      if (!(sleepH >= 1 && sleepH <= 16)) sleepH = null; else sleepH = Math.round(sleepH * 100) / 100;
+    }
     return {
       kcal: number(raw(txt, 'kcal')), min: number(raw(txt, 'min')), pas: number(raw(txt, 'pas')), poids: number(raw(txt, 'poids')),
+      sleep: sleepH,
       run: km > 0.2 && km < 100 && runMin > 2 && runMin < 600 ? { km: Math.round(km * 100) / 100, min: Math.round(runMin * 10) / 10 } : null,
     };
   }

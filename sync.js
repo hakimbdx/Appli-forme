@@ -35,7 +35,11 @@
         pendingRunId = newRun.id;
       }
     }
-    const entry = { date, at: new Date().toISOString(), kcal: d.kcal, min: d.min, pas: d.pas, poids: d.poids, km: d.run?.km ?? null, runMin: d.run?.min ?? null };
+    if (d.sleep) {
+      state.sleep ||= {};
+      state.sleep[date] = { ...(state.sleep[date] || {}), h: d.sleep, src: 'apple' };
+    }
+    const entry = { sleep: d.sleep ?? null, date, at: new Date().toISOString(), kcal: d.kcal, min: d.min, pas: d.pas, poids: d.poids, km: d.run?.km ?? null, runMin: d.run?.min ?? null };
     state.syncLog = [...syncLog().filter(x => x.date !== date), entry].slice(-30);
     state.lastSync = entry.at;
     save();
@@ -47,6 +51,7 @@
     if (d.pas != null) parts.push(`${Math.round(d.pas).toLocaleString('fr-FR')} pas`);
     if (d.poids) parts.push(`poids ${fr(d.poids, 1)} kg`);
     if (d.run) parts.push(`course ${fr(d.run.km, 1)} km`);
+    if (d.sleep) parts.push(`sommeil ${Math.floor(d.sleep)} h ${String(Math.round((d.sleep % 1) * 60)).padStart(2, '0')}`);
     status(`✅ Importé pour aujourd'hui : ${parts.join(', ') || 'aucune donnée'}.`);
     renderRunAsk();
     return true;
@@ -94,6 +99,7 @@
       ? tile('🔥', e.kcal != null ? fr(e.kcal) : '—', 'kcal actives') + tile('⏱', e.min != null ? fr(e.min) : '—', 'min d\'exercice')
         + tile('👟', e.pas != null ? fr(e.pas) : '—', 'pas') + tile('⚖️', e.poids ? `${fr(e.poids, 1)} kg` : '—', 'pesée')
         + (e.km ? tile('🏃', `${fr(e.km, 1)} km`, `${Math.round(e.runMin)} min`) : '')
+        + (e.sleep ? tile('😴', `${Math.floor(e.sleep)} h ${String(Math.round((e.sleep % 1) * 60)).padStart(2, '0')}`, 'sommeil') : '')
       : '<p class="muted hint">Rien d\'importé aujourd\'hui. Touche « 1. Récupérer » puis « 2. Importer ».</p>';
     const hist = [...syncLog()].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14);
     $('#syncHistoryCard').classList.toggle('hidden', !hist.length);

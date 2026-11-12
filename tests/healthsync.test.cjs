@@ -27,3 +27,12 @@ test('durées', () => {
   assert.equal(H.durationMin('90 s'), 1.5);
   assert.equal(H.durationMin('32'), 32);
 });
+
+test('sommeil de la nuit', () => {
+  assert.equal(H.parse('FORME;kcal=1;sommeil=7 h 12 min').sleep, 7.2);
+  assert.equal(H.parse('FORME;kcal=1;sommeil=7:30').sleep, 7.5);
+  assert.equal(H.parse('FORME;kcal=1;sommeil=6,5').sleep, 6.5);
+  assert.equal(H.parse('FORME;kcal=1;sommeil=450 min').sleep, 7.5);
+  assert.equal(H.parse('FORME;kcal=1;sommeil=').sleep, null);
+  assert.equal(H.parse('FORME;kcal=1').sleep, null);
+});
